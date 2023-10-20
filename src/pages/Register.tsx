@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import axios from "axios"; // Import Axios
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "components/ui/card";
 import * as z from "zod";
 import CustomForm from "@/components/CustomForm";
-import { IFormFields } from "@/utils/interface";
+// import { IFormFields } from "@/utils/interface";
 import { Mail } from "lucide-react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
