@@ -39,7 +39,7 @@ const Register = () => {
   // Function to handle user registration
   const registerUser = async (user:any) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/register', user);
+      const response = await axios.post('https://fingure-circle.onrender.com/api/auth/register', user);
       console.log('Registration successful:', response.data);
       notifySuccess(); // Show success toast
       // Redirect to the login page using window.location.href
@@ -47,7 +47,7 @@ const Register = () => {
     } catch (error) {
       console.error('Registration failed:', error);
       notifyError(error); // Show error toast
-      // Handle registration error, e.g., show an error message to the user.
+      // Handle registration error
     }
   };
 
