@@ -1,6 +1,6 @@
 import MentorDetail from '@/components/mentor/MentorDetail'
 import { Pricing } from '@/components/mentor/Pricing'
-import React from 'react'
+// import React from 'react'
 
 const Mentor = () => {
     return (
