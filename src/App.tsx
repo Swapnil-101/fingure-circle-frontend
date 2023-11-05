@@ -10,6 +10,8 @@ import ProtectedRoutesOutlet from 'routes/protected/ProtectedRoutesOutlet';
 
 import PageNotFound from './pages/404';
 
+
+
 interface RouteI {
   path: string;
   component: React.ReactNode;
@@ -18,7 +20,8 @@ interface RouteI {
 function App() {
   return (
     <main className="h-screen">
-      <ToastContainer />
+ 
+ <ToastContainer />
       <Routes>
         <Route element={<ProtectedRoutesOutlet />}>
           {
@@ -32,6 +35,8 @@ function App() {
           <Route path="*" element={<PageNotFound />} />
         </Route>
       </Routes>
+ 
+     
     </main>
   );
 }

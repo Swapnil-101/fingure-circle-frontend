@@ -35,6 +35,9 @@ const Login = () => {
       setLoading(true);
 
       const response = await axios.post('https://fingure-circle.onrender.com/api/auth/login', user);
+      // const responseData = await axios.get('http://localhost:5000/api/auth/protected');
+      // console.log("data",responseData)
+      
       const { token } = response.data;
       console.log("token",token)
       localStorage.setItem('token', token);
