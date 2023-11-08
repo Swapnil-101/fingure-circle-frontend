@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import * as z from "zod";
@@ -28,18 +28,15 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
 
   const notifySuccess = () => toast.success("Login successful!");
-  const notifyError = (error:any) => toast.error(`Login failed: ${error}`);
+  const notifyError = (error: any) => toast.error(`Login failed: ${error}`);
 
-  const onSubmit = async (user:any) => {
+  const onSubmit = async (user: any) => {
     try {
       setLoading(true);
 
-      const response = await axios.post('https://fingure-circle.onrender.com/api/auth/login', user);
-      // const responseData = await axios.get('http://localhost:5000/api/auth/protected');
-      // console.log("data",responseData)
-      
+      const response = await axios.post('http://localhost:5000/api/auth/login', user);
+
       const { token } = response.data;
-      console.log("token",token)
       localStorage.setItem('token', token);
 
       notifySuccess(); // Show success toast
@@ -57,6 +54,31 @@ const Login = () => {
     { name: "email", display: "Email", placeholder: "example@gmail.com", type: "email" },
     { name: "password", display: "Password", placeholder: "*******", type: "password" },
   ];
+
+  const handleGoogleSignIn = async () => {
+    try {
+
+      window.location.href = 'http://localhost:5000/api/auth/auth/google';
+    } catch (error) {
+      notifyError(error);
+      console.error('Login with Google failed:', error);
+    }
+  };
+
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    console.log("token", token)
+    if (token) {
+
+      localStorage.setItem('token', token);
+      notifySuccess();
+      console.log('Login with Google successful');
+      navigate('/');
+    }
+  }, [navigate]);
+
 
   return (
     <div className="flex justify-center items-center h-full">
@@ -86,6 +108,9 @@ const Login = () => {
               </div>
             }
           />
+          <button onClick={handleGoogleSignIn} className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+            Sign in with Google
+          </button>
         </CardContent>
         <CardFooter className="flex flex-col gap-4">
           <p>Don't have an account? <Link to='/register' className="text-primary underline font-semibold">Register.</Link></p>

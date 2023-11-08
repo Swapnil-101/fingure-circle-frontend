@@ -121,6 +121,9 @@ const SomeRecentQuestion: React.FC = () => {
                     </Item>
                 </div>
             </div>
+            <div className='flex items-end justify-end p-2'>
+                <a href='/question-ans'>Click to See More</a>
+            </div>
         </div>
     );
 };

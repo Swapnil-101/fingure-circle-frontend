@@ -3,6 +3,7 @@
 */
 import BasicInfo from '@/pages/BasicInfo';
 import Mentor from '@/pages/Mentor';
+import Question from '@/pages/Question';
 import Home from 'pages/Home';
 
 const ProtectedRoutes = [
@@ -17,6 +18,10 @@ const ProtectedRoutes = [
     {
         path: '/expert',
         component: <Mentor />,
+    },
+    {
+        path: '/question-ans',
+        component: <Question />,
     },
 ]
 
