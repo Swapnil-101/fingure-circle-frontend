@@ -8,6 +8,8 @@ import { Mail } from "lucide-react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+import baseUrl from '../config/config'
+
 const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
 
 const formSchema = z.object({
@@ -34,12 +36,12 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
 
   const notifySuccess = () => toast.success("Registration successful!");
-  const notifyError = (error:any) => toast.error(`Registration failed: ${error}`);
+  const notifyError = (error: any) => toast.error(`Registration failed: ${error}`);
 
   // Function to handle user registration
-  const registerUser = async (user:any) => {
+  const registerUser = async (user: any) => {
     try {
-      const response = await axios.post('https://fingure-circle.onrender.com/api/auth/register', user);
+      const response = await axios.post(`${baseUrl}/api/auth/register`, user);
       console.log('Registration successful:', response.data);
       notifySuccess(); // Show success toast
       // Redirect to the login page using window.location.href
@@ -51,7 +53,7 @@ const Register = () => {
     }
   };
 
-  const onSubmit = async (user:any) => {
+  const onSubmit = async (user: any) => {
     setLoading(true);
     await registerUser(user);
     setLoading(false);

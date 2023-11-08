@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import CustomForm from "@/components/CustomForm";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import baseURL from "@/config/config";
 
 const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
 
@@ -34,7 +35,7 @@ const Login = () => {
     try {
       setLoading(true);
 
-      const response = await axios.post('http://localhost:5000/api/auth/login', user);
+      const response = await axios.post(`${baseURL}/api/auth/login`, user);
 
       const { token } = response.data;
       localStorage.setItem('token', token);
@@ -58,7 +59,7 @@ const Login = () => {
   const handleGoogleSignIn = async () => {
     try {
 
-      window.location.href = 'http://localhost:5000/api/auth/auth/google';
+      window.location.href = `${baseURL}/api/auth/auth/google`;
     } catch (error) {
       notifyError(error);
       console.error('Login with Google failed:', error);
