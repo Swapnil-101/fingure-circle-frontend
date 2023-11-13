@@ -10,6 +10,10 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import baseURL from "@/config/config";
 
+//redux 
+import { useDispatch } from "react-redux";
+import { setUser } from "../features/userSlice";
+
 const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
 
 const formSchema = z.object({
@@ -21,6 +25,7 @@ const formSchema = z.object({
 });
 
 const Login = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const defaultValues = {
     email: "",
@@ -38,7 +43,11 @@ const Login = () => {
       const response = await axios.post(`${baseURL}/api/auth/login`, user);
 
       const { token } = response.data;
+      document.cookie = `token=${token}; expires=${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString()}; path=/`;
       localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+
+      dispatch(setUser(user));
 
       notifySuccess(); // Show success toast
       console.log('Login successful');
@@ -56,6 +65,17 @@ const Login = () => {
     { name: "password", display: "Password", placeholder: "*******", type: "password" },
   ];
 
+
+  function getParameterByName(name: string, url: string): string | null {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+      results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+  }
+
   const handleGoogleSignIn = async () => {
     try {
 
@@ -68,11 +88,17 @@ const Login = () => {
 
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
+    // const urlParams = new URLSearchParams(window.location.search);
+    const token = getParameterByName('token', window.location.href);
+    const userDataString = getParameterByName('userData', window.location.href);
+    const userData = userDataString ? JSON.parse(userDataString) : null;
+    localStorage.setItem('user', JSON.stringify(userData));
+
+    console.log("basic", userData)
+
     console.log("token", token)
     if (token) {
-
+      document.cookie = `token=${token}; expires=${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString()}; path=/`;
       localStorage.setItem('token', token);
       notifySuccess();
       console.log('Login with Google successful');

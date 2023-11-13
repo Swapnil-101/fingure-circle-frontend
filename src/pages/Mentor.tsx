@@ -1,9 +1,12 @@
 import MentorDetail from '@/components/mentor/MentorDetail'
 import { Pricing } from '@/components/mentor/Pricing'
 import Review from '@/components/mentor/Review'
+import useRedirectIfNotLoggedIn from '@/customHooks/useRedirectIfNotLoggedIn';
 // import React from 'react'
 
 const Mentor = () => {
+    //basic info page check hook
+    useRedirectIfNotLoggedIn();
     return (
         <div>
             <MentorDetail />

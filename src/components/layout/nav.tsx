@@ -10,11 +10,12 @@ const Nav: React.FC<NavProps> = () => {
       <div className="container px-6 py-4 mx-auto">
         <div className="lg:flex lg:items-center lg:justify-between">
           <div className="flex items-center justify-between">
-            <a href="#">
+            <a href="/">
               <img
-                className="w-auto h-6 sm:h-7"
+                className="w-auto h-[3rem]"
                 src={logo}
                 alt=""
+
               />
             </a>
 
