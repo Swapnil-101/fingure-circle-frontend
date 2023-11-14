@@ -1,10 +1,11 @@
 
-import Recom from '@/components/future/Recom'
-import React from 'react'
+import { FutureMain } from '@/components/future/FutureMain';
+import Recom from '@/components/future/Recom';
 
 const FutureProfile = () => {
     return (
         <div>
+            <FutureMain />
             <Recom />
         </div>
     )

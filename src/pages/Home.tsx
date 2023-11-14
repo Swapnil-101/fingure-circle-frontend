@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+
 import BasicInformation from "@/components/home/BasicInformation"
 import FindYourDreamProfile from "@/components/home/FindYourDreamProfile"
 import MentorConatiner from "@/components/home/MentorContainer"
 import SomeRecentQuestion from "@/components/home/SomeRecentQuestion"
-import { useNavigate } from 'react-router-dom';
 import useRedirectIfNotLoggedIn from '@/customHooks/useRedirectIfNotLoggedIn';
 const Home = () => {
   //basic info page check hook

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -18,8 +18,8 @@ interface RouteI {
 
 function App() {
   const storedUserString = localStorage.getItem('user');
-  const initialUser = storedUserString ? JSON.parse(storedUserString) : {}; // Provide a default value if null
-  const [user, setUser] = useState(initialUser);
+  const user = storedUserString ? JSON.parse(storedUserString) : {}; // Provide a default value if null
+
   console.log("data", user)
   return (
     <main className="h-screen">
@@ -28,7 +28,7 @@ function App() {
         <Routes>
           <Route element={<ProtectedRoutesOutlet />}>
             {ProtectedRoutes(user)?.map((route: RouteI) => (
-              <Route key={route.path} path={route.path} element={React.cloneElement(route.component as React.ReactElement, {             
+              <Route key={route.path} path={route.path} element={React.cloneElement(route.component as React.ReactElement, {
                 user,
               })}
               />

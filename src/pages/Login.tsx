@@ -44,8 +44,8 @@ const Login = () => {
 
       const { token } = response.data;
       document.cookie = `token=${token}; expires=${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString()}; path=/`;
-      localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
+      localStorage.setItem('token', token);
 
       dispatch(setUser(user));
 
@@ -88,15 +88,19 @@ const Login = () => {
 
 
   useEffect(() => {
+    const getParameterByNameone = (name: any, url: any) => {
+      const urlSearchParams = new URLSearchParams(url.split('?')[1]);
+      return urlSearchParams.get(name);
+    };
     // const urlParams = new URLSearchParams(window.location.search);
-    const token = getParameterByName('token', window.location.href);
+    const token = getParameterByNameone('token', window.location.href);
     const userDataString = getParameterByName('userData', window.location.href);
     const userData = userDataString ? JSON.parse(userDataString) : null;
     localStorage.setItem('user', JSON.stringify(userData));
 
     console.log("basic", userData)
 
-    console.log("token", token)
+    console.log("token", JSON.stringify(token))
     if (token) {
       document.cookie = `token=${token}; expires=${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString()}; path=/`;
       localStorage.setItem('token', token);

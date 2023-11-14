@@ -1,13 +1,12 @@
 import axios from 'axios';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 
 
 const BasicInfo: React.FC = () => {
-
-    const datalcoal = localStorage.getItem("user");
-    console.log("datalcoal",datalcoal)
+    const navigate = useNavigate();
 
     const user = useSelector((state: any) => state.user.data);
 
@@ -45,7 +44,7 @@ const BasicInfo: React.FC = () => {
                     'Authorization': `Bearer ${token}`,
                 }
             });
-            // Optionally, you can add a success message or redirect to another page
+            navigate('/');
         } catch (error) {
             // Handle API request errors (e.g., display an error message)
             console.error('Error:', error);
@@ -63,6 +62,7 @@ const BasicInfo: React.FC = () => {
                         type="text"
                         id="firstName"
                         name="firstName"
+                        placeholder='FirstName'
                         value={userInfo.firstname}
                         onChange={(e) => handleInputChange(e, 'firstname')}
                         className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
@@ -76,6 +76,7 @@ const BasicInfo: React.FC = () => {
                     <input
                         type="text"
                         id="lastName"
+                        placeholder='Lastname'
                         name="lastName"
                         value={userInfo.lastname}
                         onChange={(e) => handleInputChange(e, 'lastname')}
@@ -90,6 +91,7 @@ const BasicInfo: React.FC = () => {
                     <input
                         type="text"
                         id="schlname"
+                        placeholder='Schoolname'
                         name="schlname"
                         value={userInfo.schoolname}
                         onChange={(e) => handleInputChange(e, 'schoolname')}
@@ -106,6 +108,7 @@ const BasicInfo: React.FC = () => {
                     <input
                         type="text"
                         id="bachldegre"
+                        placeholder='BachelorsDegree'
                         name="bachldegre"
                         value={userInfo.bachelorsDegree}
                         onChange={(e) => handleInputChange(e, 'bachelorsDegree')}
@@ -120,6 +123,7 @@ const BasicInfo: React.FC = () => {
                     <input
                         type="text"
                         id="master"
+                        placeholder='Masterdegree'
                         name="master"
                         value={userInfo.masterdegree}
                         onChange={(e) => handleInputChange(e, 'masterdegree')}
@@ -136,6 +140,7 @@ const BasicInfo: React.FC = () => {
                         type="text"
                         id="certi"
                         name="certi"
+                        placeholder='Certification'
                         value={userInfo.certification}
                         onChange={(e) => handleInputChange(e, 'certification')}
 
@@ -153,6 +158,7 @@ const BasicInfo: React.FC = () => {
                                 type="text"
                                 name={index.toString()}
                                 value={activity}
+                                placeholder='Activity'
                                 onChange={(e) => handleInputChange(e, 'activity')}
                                 className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
                                 key={index}
@@ -169,6 +175,7 @@ const BasicInfo: React.FC = () => {
                         type="text"
                         id="count"
                         name="count"
+                        placeholder='Country'
                         value={userInfo.country}
                         onChange={(e) => handleInputChange(e, 'country')}
 
