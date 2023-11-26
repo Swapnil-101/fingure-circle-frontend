@@ -2,7 +2,7 @@ import React from 'react';
 
 const MentorDetail: React.FC = () => {
     return (
-        <section className="py-10 font-poppins dark:bg-gray-800">
+        <section className="py-10 font-poppins dark:bg-gray-800 ">
             <div className="max-w-6xl px-4 mx-auto">
                 <div className="flex flex-wrap mb-24 -mx-4">
                     <div className="w-full px-4 mb-8 md:w-1/2 md:mb-0">

@@ -1,6 +1,8 @@
 // ProtectedRoutes.jsx
 
+import MainMentor from '@/components/mentor/MainMentor';
 import BasicInfo from '@/pages/BasicInfo';
+import Contact from '@/pages/Contact';
 import FutureProfile from '@/pages/FutureProfile';
 import Mentor from '@/pages/Mentor';
 import Question from '@/pages/Question';
@@ -30,6 +32,14 @@ const ProtectedRoutes = (user: any) => {
         {
             path: '/basic-info',
             component: <BasicInfo />,
+        },
+        {
+            path: '/view-expert',
+            component: <MainMentor />,
+        },
+        {
+            path: '/contact-expert',
+            component: <Contact />,
         },
     ];
 
