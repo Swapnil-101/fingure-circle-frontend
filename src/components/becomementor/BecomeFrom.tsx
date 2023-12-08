@@ -9,6 +9,8 @@ const BecomeForm: React.FC<AppointmentFormProps> = () => {
     const [selectedOption2, setSelectedOption2] = useState('');
     const [message, setMessage] = useState('');
 
+    console.log(setSelectedOption2,setSelectedOption1)
+
     const handleFormSubmit = () => {
         // Handle form submission logic here
         console.log('Form submitted:', { fullName, email, selectedOption1, selectedOption2, message });

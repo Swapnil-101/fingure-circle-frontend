@@ -1,4 +1,4 @@
-import React from 'react'
+
 import MentorDetail from './MentorDetail'
 import Review from './Review'
 import { Pricing } from './Pricing'

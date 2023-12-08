@@ -1,6 +1,6 @@
 
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import useRedirectIfNotLoggedIn from '@/customHooks/useRedirectIfNotLoggedIn';
 // import React from 'react'

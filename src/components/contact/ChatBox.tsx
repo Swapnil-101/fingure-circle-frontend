@@ -53,7 +53,7 @@ interface ChatBoxProps {
     onSend: (message: string) => void;
 }
 
-export const ChatBox: React.FC<ChatBoxProps> = ({ userAvatarSrc, messages, onSend }) => (
+export const ChatBox: React.FC<ChatBoxProps> = ({ messages, onSend }) => (
     <div className="h-[25rem] flex flex-col">
         <div className="bg-gray-200 flex-1 overflow-y-scroll px-4 py-2">
             {messages.map((msg, index) => (

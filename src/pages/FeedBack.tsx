@@ -1,5 +1,5 @@
 import FeedbackForm from '@/components/feedback/FeedbackForm'
-import React from 'react'
+
 
 const FeedBack = () => {
     return (

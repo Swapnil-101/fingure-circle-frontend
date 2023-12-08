@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import MentorDetail from './MentorDetail';
-import Review from './Review';
+
 
 const Modal = ({ onClose }: any) => {
     const modalContentRef = useRef<HTMLDivElement>(null);
@@ -30,7 +30,7 @@ const Modal = ({ onClose }: any) => {
 export const MentorList = () => {
     const [isModalOpen, setModalOpen] = useState(false);
 
-    const openModal = () => setModalOpen(true);
+    // const openModal = () => setModalOpen(true);
     const closeModal = () => setModalOpen(false);
 
     return (

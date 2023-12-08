@@ -5,7 +5,7 @@ interface InputFiledProps {
     // Define props here
 }
 
-const InputFiled: React.FC<InputFiledProps> = (props) => {
+const InputFiled: React.FC<InputFiledProps> = () => {
     // Event handler (if needed)
     const handleFindClick = () => {
         // Logic for handling the find click
