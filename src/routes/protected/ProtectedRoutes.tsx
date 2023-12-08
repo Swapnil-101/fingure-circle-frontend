@@ -2,7 +2,9 @@
 
 import MainMentor from '@/components/mentor/MainMentor';
 import BasicInfo from '@/pages/BasicInfo';
+import BecomeMentor from '@/pages/BecomeMentor';
 import Contact from '@/pages/Contact';
+import FeedBack from '@/pages/FeedBack';
 import FutureProfile from '@/pages/FutureProfile';
 import Mentor from '@/pages/Mentor';
 import Question from '@/pages/Question';
@@ -40,6 +42,14 @@ const ProtectedRoutes = (user: any) => {
         {
             path: '/contact-expert',
             component: <Contact />,
+        },
+        {
+            path: '/feedback',
+            component: <FeedBack />,
+        },
+        {
+            path: '/become-expert',
+            component: <BecomeMentor />,
         },
     ];
 

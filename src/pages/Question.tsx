@@ -1,3 +1,4 @@
+import { Input } from '@/components/ui/input';
 import React from 'react';
 
 interface FAQItem {
@@ -41,6 +42,14 @@ const faqData: FAQItem[] = [
 const Question: React.FC = () => {
     return (
         <section className="bg-white dark:bg-gray-900">
+            <div className='flex justify-center items-center'>
+                <input
+                    type="text"
+                    placeholder="Ask Your question/add your question"
+                    className="block mt-2 w-[25rem] placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300"
+                />
+            </div>
+
             <div className="container px-6 py-12 mx-auto">
                 <h1 className="text-2xl font-semibold text-gray-800 lg:text-3xl dark:text-white">Frequently asked questions.</h1>
 
@@ -68,6 +77,11 @@ const Question: React.FC = () => {
                                 <h1 className="text-xl font-semibold text-gray-700 dark:text-white">{item.question}</h1>
 
                                 <p className="mt-2 text-sm text-gray-500 dark:text-gray-300">{item.answer}</p>
+                                <input
+                                    type="text"
+                                    placeholder="Insert Your Input"
+                                    className="block mt-2 w-[25rem] placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300"
+                                />
                             </div>
                         </div>
                     ))}
