@@ -1,12 +1,12 @@
 import axios from 'axios';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 
 
 
 const BasicInfo: React.FC = () => {
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     const user = useSelector((state: any) => state.user.data);
 
