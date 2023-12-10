@@ -36,15 +36,18 @@ const BasicInfo: React.FC = () => {
     };
 
     const handleSave = async () => {
-
         try {
-
             await axios.post('http://localhost:5000/api/info', userInfo, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 }
             });
-            navigate('/');
+
+            // Remove token from localStorage
+            localStorage.removeItem('token');
+
+            // Reload the page
+            window.location.reload();
         } catch (error) {
             // Handle API request errors (e.g., display an error message)
             console.error('Error:', error);

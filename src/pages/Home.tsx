@@ -9,7 +9,7 @@ const Home = () => {
   useRedirectIfNotLoggedIn();
   return (
     <div className="mx-[1rem] flex flex-col gap-8">
-      <div className="flex  justify-between flex-wrap gap-4 md:gap-0">
+      <div className="flex  justify-between  gap-4 md:gap-[1rem]">
         <BasicInformation />
         <FindYourDreamProfile />
       </div>
