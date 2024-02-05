@@ -1,3 +1,4 @@
+import baseURL from '@/config/config';
 import axios from 'axios';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -37,7 +38,7 @@ const BasicInfo: React.FC = () => {
 
     const handleSave = async () => {
         try {
-            await axios.post('http://localhost:5000/api/info', userInfo, {
+            await axios.post(`${baseURL}/api/info`, userInfo, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 }
