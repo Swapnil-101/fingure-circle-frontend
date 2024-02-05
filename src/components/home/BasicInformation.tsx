@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
 import axios from 'axios';
+import baseURL from '@/config/config';
 
 
 const BasicInformation: React.FC = () => {
@@ -20,7 +21,7 @@ const BasicInformation: React.FC = () => {
 
                 const name = localStorage.getItem('token')
                 if (user?.id || user?._id) {
-                    const response = await axios.get(`http://localhost:5000/api/info/${user?.id ?? user?._id}`, {
+                    const response = await axios.get(`${baseURL}/api/info/${user?.id ?? user?._id}`, {
                         headers: {
                             'Authorization': `Bearer ${name}`,
                         }
@@ -79,9 +80,7 @@ const BasicInformation: React.FC = () => {
                                         {infoData?.schoolname}
                                     </p>
                                     <p className="text-sm text-gray-700">
-                                        All recipes are written using certain conventions, which define
-                                        the characteristics of common ingredients. The rules vary from
-                                        place to place.
+                                      
                                     </p>
                                 </div>
                             </div>
@@ -120,9 +119,7 @@ const BasicInformation: React.FC = () => {
                                         {infoData?.bachelorsDegree}
                                     </p>
                                     <p className="text-sm text-gray-700">
-                                        All recipes are written using certain conventions, which define
-                                        the characteristics of common ingredients. The rules vary from
-                                        place to place.
+                                    
                                     </p>
                                 </div>
                             </div>
@@ -161,9 +158,7 @@ const BasicInformation: React.FC = () => {
                                         {infoData?.masterdegree}
                                     </p>
                                     <p className="text-sm text-gray-700">
-                                        All recipes are written using certain conventions, which define
-                                        the characteristics of common ingredients. The rules vary from
-                                        place to place.
+                                        
                                     </p>
                                 </div>
                             </div>
