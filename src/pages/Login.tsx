@@ -17,18 +17,19 @@ import { setUser } from "../features/userSlice";
 const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
 
 const formSchema = z.object({
-  email: z.string().email(),
+  username: z.string(),
   password: z.string().min(8, "Password must contain at least 8 characters"),
 }).refine((data) => regex.test(data.password), {
   message: "Password must contain at least 1 number and both lower and uppercase letters and a special character.",
   path: ["password"],
 });
 
+
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const defaultValues = {
-    email: "",
+    username: "",
     password: "",
   };
   const [loading, setLoading] = useState(false);
@@ -40,11 +41,13 @@ const Login = () => {
     try {
       setLoading(true);
 
-      const response = await axios.post(`${baseURL}/api/auth/login`, user);
+      const response = await axios.post(`https://swapnil-101-course-recommend.hf.space/login`, user);
 
-      const { token } = response.data;
+      console.log("response",response.data.access_token)
+
+      const  token  = response.data.access_token;
       document.cookie = `token=${token}; expires=${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString()}; path=/`;
-      localStorage.setItem('user', JSON.stringify(response.data.user));
+      // localStorage.setItem('user', JSON.stringify(response.data.user));
       localStorage.setItem('token', token);
 
       dispatch(setUser(user));
@@ -61,9 +64,9 @@ const Login = () => {
   };
 
   const FormFields = [
-    { name: "email", display: "Email", placeholder: "example@gmail.com", type: "email" },
+    { name: "username", display: "Username", placeholder: "john_doe", type: "text" },
     { name: "password", display: "Password", placeholder: "*******", type: "password" },
-  ];
+  ]
 
 
   function getParameterByName(name: string, url: string): string | null {

@@ -39,9 +39,9 @@ const Register = () => {
   const notifyError = (error: any) => toast.error(`Registration failed: ${error}`);
 
   // Function to handle user registration
-  const registerUser = async (user: any) => {
+  const registerUser = async ({ email, password }: any) => {
     try {
-      const response = await axios.post(`${baseUrl}/api/auth/register`, user);
+      const response = await axios.post(`https://swapnil-101-course-recommend.hf.space/register`, { username:email, password });
       console.log('Registration successful:', response.data);
       notifySuccess(); // Show success toast
       // Redirect to the login page using window.location.href
