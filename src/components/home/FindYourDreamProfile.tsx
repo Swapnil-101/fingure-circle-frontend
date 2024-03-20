@@ -2,8 +2,12 @@ import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
 
 
+interface FindYourDreamProfileProps {
+    infoData: any; // Update the type of infoData as per your data structure
+  }
 
-const FindYourDreamProfile: React.FC = () => {
+  
+const FindYourDreamProfile: React.FC<FindYourDreamProfileProps> = ({ infoData }) => {
     return (
         <Card className="w-[800px]">
             <CardHeader className="space-y-1">
@@ -27,7 +31,7 @@ const FindYourDreamProfile: React.FC = () => {
             </CardFooter>
         </Card>
 
-    ); 
+    );
 };
 
 export default FindYourDreamProfile;

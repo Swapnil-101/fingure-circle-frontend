@@ -9,6 +9,8 @@ const BasicInformation: React.FC = () => {
     const storedUserString = localStorage.getItem('user');
     const user = storedUserString ? JSON.parse(storedUserString) : {};
 
+    console.log("user==>",storedUserString)
+
 
 
     const [infoData, setInfoData] = useState<any>();
@@ -20,8 +22,8 @@ const BasicInformation: React.FC = () => {
                 // Replace 'user-id' with the actual user ID from localStorage
 
                 const name = localStorage.getItem('token')
-                if (user?.id || user?._id) {
-                    const response = await axios.get(`${baseURL}/api/info/${user?.id ?? user?._id}`, {
+                if (true) {
+                    const response = await axios.get(`${baseURL}/user_details`, {
                         headers: {
                             'Authorization': `Bearer ${name}`,
                         }
@@ -77,7 +79,7 @@ const BasicInformation: React.FC = () => {
                                 </div>
                                 <div>
                                     <p className="text-xl font-semibold sm:text-base">
-                                        {infoData?.schoolname}
+                                        {infoData?.school_name}
                                     </p>
                                     <p className="text-sm text-gray-700">
                                       
@@ -116,7 +118,7 @@ const BasicInformation: React.FC = () => {
                                 </div>
                                 <div>
                                     <p className="text-xl font-semibold sm:text-base">
-                                        {infoData?.bachelorsDegree}
+                                        {infoData?.bachelors_degree}
                                     </p>
                                     <p className="text-sm text-gray-700">
                                     
@@ -155,7 +157,7 @@ const BasicInformation: React.FC = () => {
                                 </div>
                                 <div>
                                     <p className="text-xl font-semibold sm:text-base">
-                                        {infoData?.masterdegree}
+                                        {infoData?.masters_degree}
                                     </p>
                                     <p className="text-sm text-gray-700">
                                         

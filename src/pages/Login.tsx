@@ -47,7 +47,7 @@ const Login = () => {
 
       const  token  = response.data.access_token;
       document.cookie = `token=${token}; expires=${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString()}; path=/`;
-      // localStorage.setItem('user', JSON.stringify(response.data.user));
+      localStorage.setItem('user', JSON.stringify(response.data));
       localStorage.setItem('token', token);
 
       dispatch(setUser(user));

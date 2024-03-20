@@ -1,4 +1,9 @@
-export const FutureMain = () => {
+
+interface FutureMain     {
+    infoData: any; // Update the type of infoData as per your data structure
+  }
+export const FutureMain: React.FC<FutureMain> = ({infoData}) => {
+    console.log("infoData==>",infoData)
     return (
         <div>
             <div className="flex justify-center items-center">

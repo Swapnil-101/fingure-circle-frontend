@@ -1,6 +1,10 @@
 
+import React from 'react';
 
-const Recom = () => {
+interface Recom {
+  infoData: any; // Update the type of infoData as per your data structure
+}
+const Recom: React.FC<Recom> = ({ infoData }) => {
     return (
         <section className="bg-white dark:bg-gray-900">
             <div className="container px-6 py-10 mx-auto">

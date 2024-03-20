@@ -9,36 +9,36 @@ import { useSelector } from 'react-redux';
 const BasicInfo: React.FC = () => {
     // const navigate = useNavigate();
 
-    const user = useSelector((state: any) => state.user.data);
+    // const user = useSelector((state: any) => state.user.data);
 
-    console.log('User from Redux:', user);
+    // console.log('User from Redux:', user);
     const token = localStorage.getItem('token');
     const [userInfo, setUserInfo] = useState({
-        firstname: '',
-        lastname: '',
-        schoolname: '',
-        bachelorsDegree: '',
-        masterdegree: '',
+        first_name: '',
+        last_name: '',
+        school_name: '',
+        bachelors_degree: '',
+        masters_degree: '',
         certification: '',
-        activity: ['', '', ''],
+        activity: '',
         country: '',
     });
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>, field: string) => {
         if (field === 'activity') {
-            // Special handling for the 'activity' field (array of strings)
-            const index = parseInt(e.target.name, 10);
-            const updatedActivity = [...userInfo.activity];
-            updatedActivity[index] = e.target.value;
-            setUserInfo({ ...userInfo, activity: updatedActivity });
+            // Special handling for the 'activity' field (array of strings to comma separated string)
+            const updatedActivity = e.target.value.split(',').map((activity: string) => activity.trim());
+            setUserInfo({ ...userInfo, activity: updatedActivity.join(', ') });
         } else {
             setUserInfo({ ...userInfo, [field]: e.target.value });
         }
     };
 
+
+
     const handleSave = async () => {
         try {
-            await axios.post(`${baseURL}/api/info`, userInfo, {
+            await axios.post(`${baseURL}/user_details`, userInfo, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 }
@@ -67,8 +67,8 @@ const BasicInfo: React.FC = () => {
                         id="firstName"
                         name="firstName"
                         placeholder='FirstName'
-                        value={userInfo.firstname}
-                        onChange={(e) => handleInputChange(e, 'firstname')}
+                        value={userInfo.first_name}
+                        onChange={(e) => handleInputChange(e, 'first_name')}
                         className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
                     />
                 </div>
@@ -82,8 +82,8 @@ const BasicInfo: React.FC = () => {
                         id="lastName"
                         placeholder='Lastname'
                         name="lastName"
-                        value={userInfo.lastname}
-                        onChange={(e) => handleInputChange(e, 'lastname')}
+                        value={userInfo.last_name}
+                        onChange={(e) => handleInputChange(e, 'last_name')}
                         className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
                     />
                 </div>
@@ -97,8 +97,8 @@ const BasicInfo: React.FC = () => {
                         id="schlname"
                         placeholder='Schoolname'
                         name="schlname"
-                        value={userInfo.schoolname}
-                        onChange={(e) => handleInputChange(e, 'schoolname')}
+                        value={userInfo.school_name}
+                        onChange={(e) => handleInputChange(e, 'school_name')}
                         className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
                     />
                 </div>
@@ -114,8 +114,8 @@ const BasicInfo: React.FC = () => {
                         id="bachldegre"
                         placeholder='BachelorsDegree'
                         name="bachldegre"
-                        value={userInfo.bachelorsDegree}
-                        onChange={(e) => handleInputChange(e, 'bachelorsDegree')}
+                        value={userInfo.bachelors_degree}
+                        onChange={(e) => handleInputChange(e, 'bachelors_degree')}
                         className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
                     />
                 </div>
@@ -129,8 +129,8 @@ const BasicInfo: React.FC = () => {
                         id="master"
                         placeholder='Masterdegree'
                         name="master"
-                        value={userInfo.masterdegree}
-                        onChange={(e) => handleInputChange(e, 'masterdegree')}
+                        value={userInfo.masters_degree}
+                        onChange={(e) => handleInputChange(e, 'masters_degree')}
 
                         className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
                     />
@@ -157,7 +157,7 @@ const BasicInfo: React.FC = () => {
                         Activity
                     </label>
                     <div className='flex gap-[2rem]'>
-                        {userInfo.activity.map((activity, index) => (
+                        {userInfo.activity.split(',').map((activity, index) => (
                             <input
                                 type="text"
                                 name={index.toString()}
