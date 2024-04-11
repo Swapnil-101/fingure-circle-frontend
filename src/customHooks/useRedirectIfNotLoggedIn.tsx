@@ -9,7 +9,7 @@ const useRedirectIfNotLoggedIn = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!user?.data_filled) {
+        if (!user?.data_fill) {
             // Redirect to login or BasicInfo based on the user's status
             navigate('/basic-info');
         }

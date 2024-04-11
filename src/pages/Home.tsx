@@ -1,4 +1,5 @@
 
+import Chat from "@/components/Chat";
 import BasicInformation from "@/components/home/BasicInformation"
 import FindYourDreamProfile from "@/components/home/FindYourDreamProfile"
 import MentorConatiner from "@/components/home/MentorContainer"
@@ -35,7 +36,7 @@ const Home = () => {
   //   fetchInfoData();
   // }, []);
 
-  console.log("infoData==>",infoData)
+  console.log("infoData==>", infoData)
   return (
     <div className="mx-[1rem] flex flex-col gap-8">
       <div className="flex  justify-between  gap-4 md:gap-[1rem]">
@@ -43,7 +44,9 @@ const Home = () => {
         <FindYourDreamProfile infoData={infoData} />
       </div>
       <MentorConatiner />
-      <SomeRecentQuestion />
+      <h1 className="max-w-xl mx-auto leading-tight text-3xl font-bold tracking-tight sm:text-center">Ask Your Questions</h1>
+      <Chat />
+      {/* <SomeRecentQuestion /> */}
     </div>
 
   )

@@ -41,7 +41,7 @@ const Register = () => {
   // Function to handle user registration
   const registerUser = async ({ email, password }: any) => {
     try {
-      const response = await axios.post(`https://swapnil-101-course-recommend.hf.space/register`, { username:email, password });
+      const response = await axios.post(`${baseUrl}/register`, { username:email, password });
       console.log('Registration successful:', response.data);
       notifySuccess(); // Show success toast
       // Redirect to the login page using window.location.href

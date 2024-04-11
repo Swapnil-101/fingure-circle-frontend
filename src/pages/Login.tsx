@@ -41,7 +41,7 @@ const Login = () => {
     try {
       setLoading(true);
 
-      const response = await axios.post(`https://swapnil-101-course-recommend.hf.space/login`, user);
+      const response = await axios.post(`${baseURL}/login`, user);
 
       console.log("response",response.data.access_token)
 
@@ -82,7 +82,7 @@ const Login = () => {
   const handleGoogleSignIn = async () => {
     try {
 
-      window.location.href = `${baseURL}/api/auth/auth/google`;
+      window.location.href = `${baseURL}/google_login`;
     } catch (error) {
       notifyError(error);
       console.error('Login with Google failed:', error);
