@@ -7,7 +7,7 @@ interface FindYourDreamProfileProps {
   }
 
   
-const FindYourDreamProfile: React.FC<FindYourDreamProfileProps> = ({ infoData }) => {
+const FindYourDreamProfile: React.FC<FindYourDreamProfileProps> = () => {
     return (
         <Card className="w-[800px]">
             <CardHeader className="space-y-1">

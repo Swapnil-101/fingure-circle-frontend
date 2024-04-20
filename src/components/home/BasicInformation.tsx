@@ -7,7 +7,7 @@ import baseURL from '@/config/config';
 const BasicInformation: React.FC = () => {
     //user obeject from localstorage
     const storedUserString = localStorage.getItem('user');
-    const user = storedUserString ? JSON.parse(storedUserString) : {};
+    // const user = storedUserString ? JSON.parse(storedUserString) : {};
 
     console.log("user==>",storedUserString)
 

@@ -3,16 +3,16 @@ import Chat from "@/components/Chat";
 import BasicInformation from "@/components/home/BasicInformation"
 import FindYourDreamProfile from "@/components/home/FindYourDreamProfile"
 import MentorConatiner from "@/components/home/MentorContainer"
-import SomeRecentQuestion from "@/components/home/SomeRecentQuestion"
-import baseURL from "@/config/config";
+// import SomeRecentQuestion from "@/components/home/SomeRecentQuestion"
+// import baseURL from "@/config/config";
 import useRedirectIfNotLoggedIn from '@/customHooks/useRedirectIfNotLoggedIn';
-import axios from "axios";
-import { useEffect, useState } from "react";
+// import axios from "axios";
+import {  useState } from "react";
 const Home = () => {
   //basic info page check hook
   useRedirectIfNotLoggedIn();
   const [infoData, setInfoData] = useState<any>();
-
+  setInfoData("")
   // useEffect(() => {
   //   // Fetch data when the component mounts
   //   const fetchInfoData = async () => {
