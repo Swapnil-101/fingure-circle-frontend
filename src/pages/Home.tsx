@@ -12,7 +12,7 @@ const Home = () => {
   //basic info page check hook
   useRedirectIfNotLoggedIn();
   const [infoData, setInfoData] = useState<any>();
-  setInfoData("")
+
   // useEffect(() => {
   //   // Fetch data when the component mounts
   //   const fetchInfoData = async () => {
@@ -36,7 +36,7 @@ const Home = () => {
   //   fetchInfoData();
   // }, []);
 
-  console.log("infoData==>", infoData)
+  console.log("infoData==>", setInfoData)
   return (
     <div className="mx-[1rem] flex flex-col gap-8">
       <div className="flex  justify-between  gap-4 md:gap-[1rem]">
