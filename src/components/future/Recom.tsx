@@ -1,10 +1,99 @@
 
-import React from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 
 interface Recom {
-  infoData: any; // Update the type of infoData as per your data structure
+    setInfoData2: any;
+    infoData2: any;
+    infoData: any;
 }
-const Recom: React.FC<Recom> = () => {
+const Recom: React.FC<Recom> = ({ setInfoData2, infoData2 }) => {
+    console.log("checking==>", infoData2)
+    const [data, setData] = useState<any>([]);
+    const [certifcate, setCertifcate] = useState<any>([]);
+    const [competition, setCompetition] = useState<any>([]);
+
+    console.log(setInfoData2)
+
+
+    // course
+    useEffect(() => {
+        // Fetch data when the component mounts
+        const fetchInfoData = async () => {
+            try {
+                const name = localStorage.getItem('token')
+                if (true) {
+                    const response = await axios.post(`https://swapnil-101-course-recommend.hf.space/get_course`, {
+                        "stream": infoData2
+                    }, {
+                        headers: {
+                            'Authorization': `Bearer ${name}`,
+                        },
+
+                    });
+                    setData(JSON.parse(response.data.ans));
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchInfoData();
+    }, [infoData2]);
+
+    // certificate
+    useEffect(() => {
+        // Fetch data when the component mounts
+        const fetchInfoData = async () => {
+            try {
+                const name = localStorage.getItem('token')
+                if (true) {
+                    const response = await axios.post(`https://swapnil-101-course-recommend.hf.space/get_certificate`, {
+                        "stream": infoData2
+                    }, {
+                        headers: {
+                            'Authorization': `Bearer ${name}`,
+                        },
+
+                    });
+                    setCertifcate(JSON.parse(response.data.ans));
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchInfoData();
+    }, [infoData2]);
+
+
+    // competeipn
+    useEffect(() => {
+        // Fetch data when the component mounts
+        const fetchInfoData = async () => {
+            try {
+                const name = localStorage.getItem('token')
+                if (true) {
+                    const response = await axios.post(`https://swapnil-101-course-recommend.hf.space/get_competition`, {
+                        "stream": infoData2
+                    }, {
+                        headers: {
+                            'Authorization': `Bearer ${name}`,
+                        },
+
+                    });
+                    setCompetition(JSON.parse(response.data.ans));
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchInfoData();
+    }, [infoData2]);
+
+
+    console.log("checkingallrunning==>", data)
     return (
         <section className="bg-white dark:bg-gray-900">
             <div className="container px-6 py-10 mx-auto">
@@ -48,8 +137,12 @@ const Recom: React.FC<Recom> = () => {
                         </h1>
 
                         <p className="text-gray-500 dark:text-gray-300">
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Provident ab
-                            nulla quod dignissimos vel non corrupti doloribus voluptatum eveniet
+                            {data.map((i: any) => {
+                                return (
+                                    <p>{i}</p>
+                                )
+                            })}
+
                         </p>
 
                         <a
@@ -102,8 +195,12 @@ const Recom: React.FC<Recom> = () => {
                         </h1>
 
                         <p className="text-gray-500 dark:text-gray-300">
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Provident ab
-                            nulla quod dignissimos vel non corrupti doloribus voluptatum eveniet
+                            {competition.map((i: any) => {
+                                return (
+                                    <p>{i}</p>
+                                )
+                            })}
+
                         </p>
 
                         <a
@@ -156,8 +253,12 @@ const Recom: React.FC<Recom> = () => {
                         </h1>
 
                         <p className="text-gray-500 dark:text-gray-300">
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Provident ab
-                            nulla quod dignissimos vel non corrupti doloribus voluptatum eveniet
+                            {certifcate.map((i: any) => {
+                                return (
+                                    <p>{i}</p>
+                                )
+                            })}
+
                         </p>
 
                         <a

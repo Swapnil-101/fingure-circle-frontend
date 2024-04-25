@@ -1,12 +1,14 @@
 
 import { FutureMain } from '@/components/future/FutureMain';
 import Recom from '@/components/future/Recom';
-import baseURL from '@/config/config';
+// import baseURL from '@/config/config';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 
 const FutureProfile = () => {
-    const [infoData, setInfoData] = useState<any>();
+    const [infoData, setInfoData] = useState<any>([]);
+    const [infoData2, setInfoData2] = useState<any>([]);
+    console.log("futureprofle==>", infoData)
 
     useEffect(() => {
         // Fetch data when the component mounts
@@ -16,12 +18,13 @@ const FutureProfile = () => {
 
                 const name = localStorage.getItem('token')
                 if (true) {
-                    const response = await axios.get(`${baseURL}/user_details`, {
+                    const response = await axios.get(`https://swapnil-101-course-recommend.hf.space/get_streams`, {
                         headers: {
                             'Authorization': `Bearer ${name}`,
                         }
                     });
-                    setInfoData(response.data);
+                    console.log("checking==>", JSON.parse(response.data.ans))
+                    setInfoData(JSON.parse(response.data.ans));
                 }
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -32,8 +35,8 @@ const FutureProfile = () => {
     }, []);
     return (
         <div>
-            <FutureMain infoData={infoData} />
-            <Recom infoData={infoData} />
+            <FutureMain setInfoData2={setInfoData2} infoData={infoData} />
+            <Recom infoData2={infoData2} setInfoData2={setInfoData2} infoData={infoData} />
         </div>
     )
 }
