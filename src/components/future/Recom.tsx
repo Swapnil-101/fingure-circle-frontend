@@ -6,9 +6,10 @@ interface Recom {
     setInfoData2: any;
     infoData2: any;
     infoData: any;
+    infoGetValue: any;
 }
-const Recom: React.FC<Recom> = ({ setInfoData2, infoData2 }) => {
-    console.log("checking==>", infoData2)
+const Recom: React.FC<Recom> = ({ setInfoData2, infoData2, infoGetValue }) => {
+    console.log("checking==>", infoGetValue)
     const [data, setData] = useState<any>([]);
     const [certifcate, setCertifcate] = useState<any>([]);
     const [competition, setCompetition] = useState<any>([]);
@@ -24,7 +25,7 @@ const Recom: React.FC<Recom> = ({ setInfoData2, infoData2 }) => {
                 const name = localStorage.getItem('token')
                 if (true) {
                     const response = await axios.post(`https://swapnil-101-course-recommend.hf.space/get_course`, {
-                        "stream": infoData2
+                        "stream": infoGetValue || infoData2
                     }, {
                         headers: {
                             'Authorization': `Bearer ${name}`,
@@ -39,7 +40,7 @@ const Recom: React.FC<Recom> = ({ setInfoData2, infoData2 }) => {
         };
 
         fetchInfoData();
-    }, [infoData2]);
+    }, [infoData2, infoGetValue]);
 
     // certificate
     useEffect(() => {
@@ -49,7 +50,7 @@ const Recom: React.FC<Recom> = ({ setInfoData2, infoData2 }) => {
                 const name = localStorage.getItem('token')
                 if (true) {
                     const response = await axios.post(`https://swapnil-101-course-recommend.hf.space/get_certificate`, {
-                        "stream": infoData2
+                        "stream": infoGetValue || infoData2
                     }, {
                         headers: {
                             'Authorization': `Bearer ${name}`,
@@ -64,7 +65,7 @@ const Recom: React.FC<Recom> = ({ setInfoData2, infoData2 }) => {
         };
 
         fetchInfoData();
-    }, [infoData2]);
+    }, [infoData2, infoGetValue]);
 
 
     // competeipn
@@ -75,7 +76,7 @@ const Recom: React.FC<Recom> = ({ setInfoData2, infoData2 }) => {
                 const name = localStorage.getItem('token')
                 if (true) {
                     const response = await axios.post(`https://swapnil-101-course-recommend.hf.space/get_competition`, {
-                        "stream": infoData2
+                        "stream": infoGetValue || infoData2
                     }, {
                         headers: {
                             'Authorization': `Bearer ${name}`,
@@ -90,7 +91,7 @@ const Recom: React.FC<Recom> = ({ setInfoData2, infoData2 }) => {
         };
 
         fetchInfoData();
-    }, [infoData2]);
+    }, [infoData2,infoGetValue]);
 
 
     console.log("checkingallrunning==>", data)

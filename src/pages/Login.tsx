@@ -43,12 +43,14 @@ const Login = () => {
 
       const response = await axios.post(`${baseURL}/login`, user);
 
-      console.log("response",response.data.access_token)
+      console.log("response", response.data.access_token)
 
-      const  token  = response.data.access_token;
+      const token = response.data.access_token;
       document.cookie = `token=${token}; expires=${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString()}; path=/`;
       localStorage.setItem('user', JSON.stringify(response.data));
       localStorage.setItem('token', token);
+      localStorage.setItem('userlocaldata', JSON.stringify(user));
+
 
       dispatch(setUser(user));
 

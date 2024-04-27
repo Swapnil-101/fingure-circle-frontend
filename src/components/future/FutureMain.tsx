@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+
+
 interface FutureMainProps {
     infoData: any;
     setInfoData2: any;
@@ -7,6 +9,8 @@ interface FutureMainProps {
 
 export const FutureMain: React.FC<FutureMainProps> = ({ infoData, setInfoData2 }) => {
     console.log("futuremain", infoData)
+   
+
     const [data, setData] = useState<any>();
     const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -32,6 +36,9 @@ export const FutureMain: React.FC<FutureMainProps> = ({ infoData, setInfoData2 }
 
     const handleCardClick = (i: any) => {
         setInfoData2(i)
+        setTimeout(() => {
+            window.location.href = '/'
+        }, 3000)
     }
 
     return (

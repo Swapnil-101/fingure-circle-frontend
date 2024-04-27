@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 
 import useRedirectIfNotLoggedIn from '@/customHooks/useRedirectIfNotLoggedIn';
+import axios from 'axios';
+import baseURL from '@/config/config';
 // import React from 'react'
 
 interface SchoolDetailProps {
@@ -29,11 +31,31 @@ const Mentor = () => {
     useRedirectIfNotLoggedIn();
     const [isMentorClicked, setMentorClicked] = useState(false);
     const [isMobileScreen, setIsMobileScreen] = useState(false);
+    const [data, setData] = useState()
+    const [stream, setStream] = useState()
 
     console.log("maindata", isMobileScreen)
 
     useEffect(() => {
         console.log("maindatacc")
+
+        const fetchInfoData = async () => {
+            try {
+                const name = localStorage.getItem('token');
+                const response = await axios.get(`${baseURL}/chosen_stream`, {
+                    headers: {
+                        'Authorization': `Bearer ${name}`,
+                    }
+                });
+                const chosenStream = response.data.chosen_stream;
+                setData(chosenStream); // Update the state with the fetched data
+                console.log("checking==>", chosenStream);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchInfoData();
 
         const handleResize = () => {
             setIsMobileScreen(window.innerWidth < 1024);
@@ -42,7 +64,37 @@ const Mentor = () => {
         window.addEventListener("resize", handleResize);
 
         return () => window.removeEventListener("resize", handleResize);
+
+
     }, []);
+
+    // course
+    useEffect(() => {
+        // Fetch data when the component mounts
+        const fetchInfoData = async () => {
+            try {
+                const name = localStorage.getItem('token')
+                if (true) {
+                    const response = await axios.post(`https://swapnil-101-course-recommend.hf.space/get_mentor`, {
+                        "stream": data
+                    }, {
+                        headers: {
+                            'Authorization': `Bearer ${name}`,
+                        },
+
+                    });
+                    setStream(JSON.parse(response.data.ans));
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchInfoData();
+    }, [data]);
+
+
+    console.log("checkinfstram==>", stream)
 
     return (
         <div>
