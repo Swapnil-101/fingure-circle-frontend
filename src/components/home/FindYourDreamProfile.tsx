@@ -11,28 +11,36 @@ interface FindYourDreamProfileProps {
 
 const FindYourDreamProfile: React.FC<FindYourDreamProfileProps> = () => {
 
-    const [data, setData] = useState()
-    // let value = "";
-    useEffect(() => {
-        // Fetch data when the component mounts
-        const fetchInfoData = async () => {
-            try {
-                const name = localStorage.getItem('token');
-                const response = await axios.get(`${baseURL}/chosen_stream`, {
-                    headers: {
-                        'Authorization': `Bearer ${name}`,
-                    }
-                });
-                const chosenStream = response.data.chosen_stream;
-                setData(chosenStream); // Update the state with the fetched data
-                console.log("checking==>", chosenStream);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
+    const [data, setData] = useState<any>({})
 
-        fetchInfoData();
-    }, []);
+
+    useEffect(() => {
+        const degree = localStorage.getItem('degree') || "{}";
+        setData(JSON.parse(degree))
+     },[])
+    // let value = "";
+    // useEffect(() => {
+    //     // Fetch data when the component mounts
+    //     const fetchInfoData = async () => {
+    //         try {
+    //             const name = localStorage.getItem('token');
+    //             const response = await axios.get(`${baseURL}/chosen_stream`, {
+    //                 headers: {
+    //                     'Authorization': `Bearer ${name}`,
+    //                     credentials:'include'
+    //                 },
+                    
+    //             });
+    //             const chosenStream = response.data.chosen_stream;
+    //             setData(chosenStream); // Update the state with the fetched data
+    //             console.log("checking==>", chosenStream);
+    //         } catch (error) {
+    //             console.error('Error fetching data:', error);
+    //         }
+    //     };
+
+    //     fetchInfoData();
+    // }, []);
 
     return (
         <Card className="w-[800px]">
@@ -41,7 +49,7 @@ const FindYourDreamProfile: React.FC<FindYourDreamProfileProps> = () => {
             </CardHeader>
             <CardContent className="grid gap-4 flex flex-col items-center">
 
-                <h1 className='text-2xl text-center'>{data}</h1>
+                <h1 className='text-2xl text-center'>{data?.stream_name}</h1>
                 <div className='w-[8rem] flex justify-center items-center'>
                     <a href="/future-profile" className="relative px-5 py-3 overflow-hidden font-medium text-gray-600 bg-gray-100 border  border-gray-100 rounded-lg shadow-inner group">
                         <span className="absolute top-0 left-0 w-0 h-0 transition-all duration-200 border-t-2 border-gray-600 group-hover:w-full ease"></span>

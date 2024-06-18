@@ -10,10 +10,16 @@ const FutureProfile = () => {
     const [infoData, setInfoData] = useState<any>([]);
     const [infoData2, setInfoData2] = useState<any>("");
     const [infoGetValue, setInfoGetValue] = useState<any>("");
+    const [threeData, setThreeData] = useState<any>([]);
+    const [degree, setDegree] = useState<any>();
 
-    // const [usernames, setUserNames] = useState<any>();
+    console.log("maindegree==>",degree)
 
-    console.log("futureprofle==>", infoData2)
+
+    useEffect(() => {
+       const degree = localStorage.getItem('degree') ||"{}"
+       setDegree(JSON.parse(degree))
+    },[])
 
     useEffect(() => {
         // Fetch data when the component mounts
@@ -39,6 +45,38 @@ const FutureProfile = () => {
         fetchInfoData();
     }, []);
 
+
+    useEffect(() => {
+        
+        if(degree){
+            const fetchInfoData = async () => {
+                try {
+                    const name = localStorage.getItem('token')
+                    if (true) {
+                        const response = await axios.post(`https://swapnil-101-course-recommend.hf.space/get_three_streams`, {
+                            "degree": degree?.masters_degree||degree?.bachelors_degree
+                        }, {
+                            headers: {
+                                'Authorization': `Bearer ${name}`,
+                            },
+    
+                        });
+                        console.log("checingmain==>", JSON.parse(response.data.ans))
+                        setThreeData(JSON.parse(response.data.ans));
+                    }
+                } catch (error) {
+                    console.error('Error fetching data:', error);
+                }
+            };
+            fetchInfoData();
+        }
+        
+
+        
+    }, [degree]);
+
+   
+
     useEffect(() => {
         // Fetch data when the component mounts
         const fetchInfoData = async () => {
@@ -60,6 +98,8 @@ const FutureProfile = () => {
         fetchInfoData();
     }, []);
 
+    
+
 
 
 
@@ -67,6 +107,8 @@ const FutureProfile = () => {
 
 
     useEffect(() => {
+
+        
         if (infoData2) {
             const fetchInfoData = async () => {
                 try {
@@ -78,8 +120,8 @@ const FutureProfile = () => {
                     // console.log("username==>", usernames?.username                )
 
                     if (true) {
-                        const response = await axios.put(`${baseURL}/add_stream_chosen`, {
-                            "stream_chosen": infoData2
+                        const response = await axios.post(`${baseURL}/update_user_details_diff`, {
+                            stream_name: infoData2
                         }, {
                             headers: {
                                 'Authorization': `Bearer ${token}`,
@@ -101,10 +143,13 @@ const FutureProfile = () => {
     }, [infoData2]);
 
 
+    
+
+
 
     return (
         <div>
-            <FutureMain setInfoData2={setInfoData2} infoData={infoData} />
+            <FutureMain setInfoData2={setInfoData2} infoData={infoData} threeData={threeData} />
             <Recom infoGetValue={infoGetValue} infoData2={infoData2} setInfoData2={setInfoData2} infoData={infoData} />
         </div>
     )

@@ -28,6 +28,7 @@ const BasicInformation: React.FC = () => {
                             'Authorization': `Bearer ${name}`,
                         }
                     });
+                    localStorage.setItem('degree', JSON.stringify(response.data))
                     setInfoData(response.data);
                 }
             } catch (error) {
