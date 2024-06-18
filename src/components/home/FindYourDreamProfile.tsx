@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
-import axios from 'axios';
-import baseURL from '@/config/config';
+
 
 
 interface FindYourDreamProfileProps {
@@ -17,7 +16,7 @@ const FindYourDreamProfile: React.FC<FindYourDreamProfileProps> = () => {
     useEffect(() => {
         const degree = localStorage.getItem('degree') || "{}";
         setData(JSON.parse(degree))
-     },[])
+    }, [])
     // let value = "";
     // useEffect(() => {
     //     // Fetch data when the component mounts
@@ -29,7 +28,7 @@ const FindYourDreamProfile: React.FC<FindYourDreamProfileProps> = () => {
     //                     'Authorization': `Bearer ${name}`,
     //                     credentials:'include'
     //                 },
-                    
+
     //             });
     //             const chosenStream = response.data.chosen_stream;
     //             setData(chosenStream); // Update the state with the fetched data

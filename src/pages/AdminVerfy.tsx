@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import baseURL from '@/config/config';
-import {  toast } from "react-toastify";
+import { toast } from "react-toastify";
 
 
 const AdminVerfy = () => {
@@ -14,7 +14,7 @@ const AdminVerfy = () => {
 
     const token = localStorage.getItem('token');
     const handleSave = () => {
-        axios.put(`${baseURL}/verify_mentor/${mentorId}`, {
+        axios.put(`${baseURL}/admin/verify_mentor/${mentorId}`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
             }

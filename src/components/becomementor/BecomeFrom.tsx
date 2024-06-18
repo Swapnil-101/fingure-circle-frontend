@@ -7,6 +7,7 @@ interface AppointmentFormProps { }
 const BecomeForm: React.FC<AppointmentFormProps> = () => {
 
     const [degree, setDegree] = useState<any>({});
+    console.log(degree)
     const [expertData, setExpertData] = useState({
         mentor_name: '',
         profile_photo: "",
@@ -52,15 +53,21 @@ const BecomeForm: React.FC<AppointmentFormProps> = () => {
             });
     };
 
+
+
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
+
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
-                setExpertData(prevState => ({
-                    ...prevState,
-                    profile_photo: reader.result as string,
-                }));
+                if (reader.result) {
+                    const base64String = (reader.result as string).split(',')[1];
+                    setExpertData(prevState => ({
+                        ...prevState,
+                        profile_photo: base64String,
+                    }));
+                }
             };
             reader.readAsDataURL(file);
         }
