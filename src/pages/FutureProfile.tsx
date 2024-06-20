@@ -150,7 +150,7 @@ const FutureProfile = () => {
     return (
         <div>
             <FutureMain setInfoData2={setInfoData2} infoData={infoData} threeData={threeData} />
-            <Recom infoGetValue={infoGetValue} infoData2={infoData2} setInfoData2={setInfoData2} infoData={infoData} />
+            <Recom infoGetValue={infoGetValue} infoData2={infoData2} setInfoData2={setInfoData2} infoData={infoData} degree={degree} />
         </div>
     )
 }

@@ -7,9 +7,10 @@ interface Recom {
     infoData2: any;
     infoData: any;
     infoGetValue: any;
+    degree:any;
 }
-const Recom: React.FC<Recom> = ({ setInfoData2, infoData2, infoGetValue }) => {
-    console.log("checking==>", infoGetValue)
+const Recom: React.FC<Recom> = ({ setInfoData2, infoData2, infoGetValue,degree }) => {
+    console.log("checking==>", degree?.stream_name)
     const [data, setData] = useState<any>([]);
     const [certifcate, setCertifcate] = useState<any>([]);
     const [competition, setCompetition] = useState<any>([]);
@@ -23,9 +24,9 @@ const Recom: React.FC<Recom> = ({ setInfoData2, infoData2, infoGetValue }) => {
         const fetchInfoData = async () => {
             try {
                 const name = localStorage.getItem('token')
-                if (true) {
+                if (degree?.stream_name) {
                     const response = await axios.post(`https://swapnil-101-course-recommend.hf.space/get_course`, {
-                        "stream": infoGetValue || infoData2
+                        "stream": degree?.stream_name
                     }, {
                         headers: {
                             'Authorization': `Bearer ${name}`,
@@ -40,7 +41,7 @@ const Recom: React.FC<Recom> = ({ setInfoData2, infoData2, infoGetValue }) => {
         };
 
         fetchInfoData();
-    }, [infoData2, infoGetValue]);
+    }, [degree?.stream_name]);
 
     // certificate
     useEffect(() => {
@@ -48,9 +49,9 @@ const Recom: React.FC<Recom> = ({ setInfoData2, infoData2, infoGetValue }) => {
         const fetchInfoData = async () => {
             try {
                 const name = localStorage.getItem('token')
-                if (true) {
+                if (degree?.stream_name) {
                     const response = await axios.post(`https://swapnil-101-course-recommend.hf.space/get_certificate`, {
-                        "stream": infoGetValue || infoData2
+                        "stream": degree?.stream_name
                     }, {
                         headers: {
                             'Authorization': `Bearer ${name}`,
@@ -65,7 +66,7 @@ const Recom: React.FC<Recom> = ({ setInfoData2, infoData2, infoGetValue }) => {
         };
 
         fetchInfoData();
-    }, [infoData2, infoGetValue]);
+    }, [degree?.stream_name]);
 
 
     // competeipn
@@ -74,9 +75,9 @@ const Recom: React.FC<Recom> = ({ setInfoData2, infoData2, infoGetValue }) => {
         const fetchInfoData = async () => {
             try {
                 const name = localStorage.getItem('token')
-                if (true) {
+                if (degree?.stream_name) {
                     const response = await axios.post(`https://swapnil-101-course-recommend.hf.space/get_competition`, {
-                        "stream": infoGetValue || infoData2
+                        "stream": degree?.stream_name
                     }, {
                         headers: {
                             'Authorization': `Bearer ${name}`,
@@ -91,7 +92,7 @@ const Recom: React.FC<Recom> = ({ setInfoData2, infoData2, infoGetValue }) => {
         };
 
         fetchInfoData();
-    }, [infoData2,infoGetValue]);
+    }, [degree?.stream_name]);
 
 
     console.log("checkingallrunning==>", data)
