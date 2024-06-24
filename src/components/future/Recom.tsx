@@ -7,15 +7,15 @@ interface Recom {
     infoData2: any;
     infoData: any;
     infoGetValue: any;
-    degree:any;
+    degree: any;
 }
-const Recom: React.FC<Recom> = ({ setInfoData2, infoData2, infoGetValue,degree }) => {
+const Recom: React.FC<Recom> = ({ degree }) => {
     console.log("checking==>", degree?.stream_name)
     const [data, setData] = useState<any>([]);
     const [certifcate, setCertifcate] = useState<any>([]);
     const [competition, setCompetition] = useState<any>([]);
 
-    console.log(setInfoData2)
+
 
 
     // course
