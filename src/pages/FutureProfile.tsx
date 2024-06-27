@@ -13,13 +13,13 @@ const FutureProfile = () => {
     const [threeData, setThreeData] = useState<any>([]);
     const [degree, setDegree] = useState<any>();
 
-    console.log("maindegree==>",degree)
+    console.log("maindegree==>", degree)
 
 
     useEffect(() => {
-       const degree = localStorage.getItem('degree') ||"{}"
-       setDegree(JSON.parse(degree))
-    },[])
+        const degree = localStorage.getItem('degree') || "{}"
+        setDegree(JSON.parse(degree))
+    }, [])
 
     useEffect(() => {
         // Fetch data when the component mounts
@@ -47,19 +47,19 @@ const FutureProfile = () => {
 
 
     useEffect(() => {
-        
-        if(degree){
+
+        if (degree) {
             const fetchInfoData = async () => {
                 try {
                     const name = localStorage.getItem('token')
                     if (true) {
                         const response = await axios.post(`https://swapnil-101-course-recommend.hf.space/get_three_streams`, {
-                            "degree": degree?.masters_degree||degree?.bachelors_degree
+                            "degree": degree?.masters_degree || degree?.bachelors_degree
                         }, {
                             headers: {
                                 'Authorization': `Bearer ${name}`,
                             },
-    
+
                         });
                         console.log("checingmain==>", JSON.parse(response.data.ans))
                         setThreeData(JSON.parse(response.data.ans));
@@ -70,12 +70,12 @@ const FutureProfile = () => {
             };
             fetchInfoData();
         }
-        
 
-        
+
+
     }, [degree]);
 
-   
+
 
     useEffect(() => {
         // Fetch data when the component mounts
@@ -98,7 +98,7 @@ const FutureProfile = () => {
         fetchInfoData();
     }, []);
 
-    
+
 
 
 
@@ -108,42 +108,56 @@ const FutureProfile = () => {
 
     useEffect(() => {
 
-        
+
         if (infoData2) {
             const fetchInfoData = async () => {
                 try {
                     const token = localStorage.getItem('token');
-                    // const username = localStorage.getItem('userlocaldata')
-                    // setUserNames(JSON.parse(username))
 
-                    // let point=username;
-                    // console.log("username==>", usernames?.username                )
-
-                    if (true) {
+                    if (true) { // Yaha pe condition aapko dekhni hogi ki kab `/update_user_details_diff` API call me error aata hai
                         const response = await axios.post(`${baseURL}/update_user_details_diff`, {
                             stream_name: infoData2
                         }, {
                             headers: {
                                 'Authorization': `Bearer ${token}`,
                             },
-
                         });
-                        console.log(response)
+                        console.log(response);
                         // setCertifcate(JSON.parse(response.data.ans));
                     }
-                } catch (error) {
+                } catch (error: any) {
                     console.error('Error fetching data:', error);
+                    const token = localStorage.getItem('token');
+
+                    if (error.response && error.response.status === 500) {
+                        try {
+                            // Agar 500 Internal Server Error aata hai, to `/streams` endpoint ko call karein
+                            const streamResponse = await axios.post(`${baseURL}/streams`, {
+                                name: infoData2
+                            }, {
+                                headers: {
+                                    'Authorization': `Bearer ${token}`,
+                                },
+                            });
+                            console.log('Stream response:', streamResponse);
+                            // Ab page refresh karein, yeh aapke application ke depend karta hai kaise implement kiya hai
+                            fetchInfoData()
+                        } catch (streamError) {
+                            console.error('Error fetching streams:', streamError);
+                            // Handle errors from /streams API call
+                        }
+                    }
                 }
             };
 
-            fetchInfoData();
+            fetchInfoData(); // Call fetchInfoData function to initiate the process
         }
         // Fetch data when the component mounts
 
     }, [infoData2]);
 
 
-    
+
 
 
 

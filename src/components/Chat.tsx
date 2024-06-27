@@ -28,7 +28,7 @@ const Chat: React.FC = () => {
                     <div key={index} className={`px-4 py-2 ${chat.source === 'user' ? 'flex justify-end' : 'flex justify-start'}`}>
                         <div className="flex items-center mb-2">
                             {chat.source === 'mentor' && <img className="w-8 h-8 rounded-full mr-2" src="https://picsum.photos/50/50" alt="Mentor Avatar" />}
-                            <div className={`bg-white rounded-lg p-2 shadow mb-2 max-w-sm ${chat.source === 'user' ? 'bg-blue-500 text-black' : 'bg-gray-300'}`}>
+                            <div className={`bg-white rounded-lg p-2 shadow mb-2 max-w-[32rem] ${chat.source === 'user' ? 'bg-blue-500 text-black' : 'bg-gray-300'}`}>
                                 {chat.message}
                             </div>
                             {chat.source === 'user' && <img className="w-8 h-8 rounded-full ml-2" src="https://picsum.photos/50/50" alt="User Avatar" />}
