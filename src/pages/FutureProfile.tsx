@@ -114,7 +114,7 @@ const FutureProfile = () => {
                 try {
                     const token = localStorage.getItem('token');
 
-                    if (true) { // Yaha pe condition aapko dekhni hogi ki kab `/update_user_details_diff` API call me error aata hai
+                    if (true) {
                         const response = await axios.post(`${baseURL}/update_user_details_diff`, {
                             stream_name: infoData2
                         }, {
