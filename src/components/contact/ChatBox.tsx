@@ -1,4 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { io } from 'socket.io-client';
+import baseURL from '@/config/config';
+
+const socket = io(baseURL, {
+    transports: ['websocket', 'polling']
+});
 
 interface MessageProps {
     avatarSrc: string;
@@ -49,17 +56,98 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
 
 interface ChatBoxProps {
     userAvatarSrc: string;
-    messages: MessageProps[];
+    userId: number;
     onSend: (message: string) => void;
+    onSelectMentor: (mentorId: number) => void; // Add onSelectMentor prop
 }
 
-export const ChatBox: React.FC<ChatBoxProps> = ({ messages, onSend }) => (
-    <div className="h-[25rem] flex flex-col">
-        <div className="bg-gray-200 flex-1 overflow-y-scroll px-4 py-2">
-            {messages.map((msg, index) => (
-                <Message key={index} {...msg} />
-            ))}
+export const ChatBox: React.FC<ChatBoxProps> = ({ userAvatarSrc, onSelectMentor }: any) => {
+    const [messages, setMessages] = useState<MessageProps[]>([]);
+    const [mentors, setMentors] = useState<any[]>([]);
+    const [selectedMentorId, setSelectedMentorId] = useState<number | null>(null);
+    const [data, setData] = useState<any>({});
+
+    useEffect(() => {
+        const degree = localStorage.getItem('degree') || "{}";
+        setData(JSON.parse(degree));
+    }, []);
+
+    useEffect(() => {
+        const fetchInfoData = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await axios.get(`${baseURL}/assigned_mentors`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    }
+                });
+                setMentors(response.data.assigned_mentors);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchInfoData();
+    }, []);
+
+    useEffect(() => {
+        // Socket event listeners
+        socket.on('receive_message', (data) => {
+            const { sender_id, message: receivedMessage } = data;
+            const mentor = mentors.find((m: any) => m.id === sender_id);
+            if (mentor) {
+                const newMessage: MessageProps = {
+                    avatarSrc: userAvatarSrc,
+                    username: mentor.mentor_name,
+                    message: receivedMessage
+                };
+                setMessages((prevMessages) => [...prevMessages, newMessage]);
+            }
+        });
+
+        return () => {
+            socket.disconnect();
+        };
+    }, [userAvatarSrc, mentors]);
+
+    const handleSend = (message: string) => {
+        if (!selectedMentorId) {
+            console.error('No mentor selected to send message to.');
+            return;
+        }
+
+        const newMessage: MessageProps = {
+            avatarSrc: userAvatarSrc,
+            username: 'You',
+            message
+        };
+        setMessages([...messages, newMessage]);
+        socket.emit('send_message', { sender_id: data?.user_id, receiver_id: selectedMentorId, message });
+    };
+
+    const handleMentorSelect = (mentorId: number) => {
+        setSelectedMentorId(mentorId);
+        onSelectMentor(mentorId);
+    };
+
+    return (
+        <div className="h-[25rem] flex">
+            <div className="w-1/4 bg-gray-100 p-2 overflow-y-scroll">
+                {mentors.map((mentor: any) => (
+                    <div key={mentor.id} className="mb-2 p-2 border rounded" onClick={() => handleMentorSelect(mentor.id)}>
+                        <div className="font-medium">{mentor.mentor_name}</div>
+                        <div>{mentor.stream_name}</div>
+                    </div>
+                ))}
+            </div>
+            <div className="flex-1 flex flex-col">
+                <div className="bg-gray-200 flex-1 overflow-y-scroll px-4 py-2">
+                    {messages.map((msg, index) => (
+                        <Message key={index} {...msg} />
+                    ))}
+                </div>
+                <ChatInput onSend={handleSend} />
+            </div>
         </div>
-        <ChatInput onSend={onSend} />
-    </div>
-);
+    );
+};

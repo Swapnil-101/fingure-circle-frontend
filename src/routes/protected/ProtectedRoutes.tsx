@@ -11,6 +11,7 @@ import Mentor from '@/pages/Mentor';
 import MentorList from '@/pages/MentorList';
 import Question from '@/pages/Question';
 import RazerPay from '@/pages/RazerPay';
+
 import Home from 'pages/Home';
 
 const ProtectedRoutes = (user: any) => {
@@ -66,6 +67,7 @@ const ProtectedRoutes = (user: any) => {
             path: '/razerpay',
             component: <RazerPay />,
         },
+
     ];
 
     return routes;
