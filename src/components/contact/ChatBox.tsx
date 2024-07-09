@@ -60,6 +60,7 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ userAvatarSrc, onSelectMentor 
     const [messages, setMessages] = useState<MessageProps[]>([]);
     const [mentors, setMentors] = useState<any[]>([]);
     const [selectedMentorId, setSelectedMentorId] = useState<number | null>(null);
+    //@ts-ignore
     const [data, setData] = useState<any>({});
 
     useEffect(() => {

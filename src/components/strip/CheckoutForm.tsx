@@ -1,4 +1,5 @@
 import React from 'react';
+//@ts-ignore
 import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
 
 
