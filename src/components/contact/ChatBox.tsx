@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { io } from 'socket.io-client';
 import baseURL from '@/config/config';
-
-const socket = io(baseURL, {
-    transports: ['websocket', 'polling']
-});
 
 interface MessageProps {
     avatarSrc: string;
@@ -58,7 +53,7 @@ interface ChatBoxProps {
     userAvatarSrc: string;
     userId: number;
     onSend: (message: string) => void;
-    onSelectMentor: (mentorId: number) => void; // Add onSelectMentor prop
+    onSelectMentor: (mentorId: number) => void;
 }
 
 export const ChatBox: React.FC<ChatBoxProps> = ({ userAvatarSrc, onSelectMentor }: any) => {
@@ -90,26 +85,6 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ userAvatarSrc, onSelectMentor 
         fetchInfoData();
     }, []);
 
-    useEffect(() => {
-        // Socket event listeners
-        socket.on('receive_message', (data) => {
-            const { sender_id, message: receivedMessage } = data;
-            const mentor = mentors.find((m: any) => m.id === sender_id);
-            if (mentor) {
-                const newMessage: MessageProps = {
-                    avatarSrc: userAvatarSrc,
-                    username: mentor.mentor_name,
-                    message: receivedMessage
-                };
-                setMessages((prevMessages) => [...prevMessages, newMessage]);
-            }
-        });
-
-        return () => {
-            socket.disconnect();
-        };
-    }, [userAvatarSrc, mentors]);
-
     const handleSend = (message: string) => {
         if (!selectedMentorId) {
             console.error('No mentor selected to send message to.');
@@ -122,7 +97,8 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ userAvatarSrc, onSelectMentor 
             message
         };
         setMessages([...messages, newMessage]);
-        socket.emit('send_message', { sender_id: data?.user_id, receiver_id: selectedMentorId, message });
+        
+        // Perform other actions to handle message sending, such as API calls, if needed
     };
 
     const handleMentorSelect = (mentorId: number) => {
