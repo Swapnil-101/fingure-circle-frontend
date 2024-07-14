@@ -62,7 +62,9 @@ interface ChatBoxProps {
 export const ChatBox: React.FC<ChatBoxProps> = ({ userAvatarSrc, userId, onSelectMentor, selectedMentorIds }) => {
     const [messages, setMessages] = useState<MessageProps[]>([]);
     const [mentors, setMentors] = useState<any[]>([]);
+    const [users, setUsers] = useState<any[]>([]);
     const [selectedMentorId, setSelectedMentorId] = useState<number | null>(null);
+    const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
     console.log("checkingmentor", userId, selectedMentorId)
     const [data, setData] = useState<any>({});
 
@@ -72,7 +74,7 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ userAvatarSrc, userId, onSelec
     }, []);
 
     useEffect(() => {
-        const fetchInfoData = async () => {
+        const fetchMentors = async () => {
             try {
                 const token = localStorage.getItem('token');
                 const response = await axios.get(`${baseURL}/assigned_mentors`, {
@@ -82,16 +84,15 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ userAvatarSrc, userId, onSelec
                 });
                 setMentors(response.data.assigned_mentors);
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.error('Error fetching mentors:', error);
             }
         };
 
-        fetchInfoData();
+        fetchMentors();
     }, []);
 
-
     useEffect(() => {
-        const fetchInfoData = async () => {
+        const fetchUsers = async () => {
             try {
                 const token = localStorage.getItem('token');
                 const response = await axios.get(`${baseURL}/assigned_users`, {
@@ -99,19 +100,14 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ userAvatarSrc, userId, onSelec
                         'Authorization': `Bearer ${token}`,
                     }
                 });
-                console.log("responsoe==>", response.data)
-                // setMentors(response.data.assigned_mentors);
+                setUsers(response.data.assigned_users);
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.error('Error fetching users:', error);
             }
         };
 
-        fetchInfoData();
+        fetchUsers();
     }, []);
-
-
-
-
 
     useEffect(() => {
         if (selectedMentorId) {
@@ -183,16 +179,30 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ userAvatarSrc, userId, onSelec
 
     const handleMentorSelect = (mentorId: number) => {
         setSelectedMentorId(mentorId);
+        setSelectedUserId(null); // Deselect user when a mentor is selected
         onSelectMentor(mentorId);
+    };
+
+    const handleUserSelect = (userId: number) => {
+        setSelectedUserId(userId);
+        setSelectedMentorId(null); // Deselect mentor when a user is selected
+        onSelectMentor(userId);
     };
 
     return (
         <div className="h-[25rem] flex">
             <div className="w-1/4 bg-gray-100 p-2 overflow-y-scroll">
+                <h2 className="font-bold mb-2">Mentors</h2>
                 {mentors.map((mentor) => (
                     <div key={mentor.id} className="mb-2 p-2 border rounded" onClick={() => handleMentorSelect(mentor.id)}>
                         <div className="font-medium">{mentor.mentor_name}</div>
                         <div>{mentor.stream_name}</div>
+                    </div>
+                ))}
+                <h2 className="font-bold mb-2">Users</h2>
+                {users.map((user) => (
+                    <div key={user.id} className="mb-2 p-2 border rounded" onClick={() => handleUserSelect(user.id)}>
+                        <div className="font-medium">{user.username}</div>
                     </div>
                 ))}
             </div>
