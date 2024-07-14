@@ -1,6 +1,5 @@
 import Calendar from '@/components/contact/Celender';
 import { ChatBox } from '@/components/contact/ChatBox';
-import Note from '@/components/contact/Note';
 import React from 'react';
 
 interface MessageProps {
@@ -39,9 +38,10 @@ const Contact: React.FC = () => {
                     onSelectMentor={handleSelectMentor}
                     userAvatarSrc="https://picsum.photos/50/50"
                     userId={1}  // Replace this with the appropriate user ID
-                    onSend={handleSend}
+                    // onSend={handleSend}
+                    selectedMentorIds={selectedMentorId}
                 />
-                <Note />
+                {/* <Chat /> */}
             </div>
             <div className='w-[50%]'>
                 <Calendar />
