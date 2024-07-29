@@ -65,8 +65,9 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ userAvatarSrc, userId, onSelec
     const [users, setUsers] = useState<any[]>([]);
     const [selectedMentorId, setSelectedMentorId] = useState<number | null>(null);
     const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
-    console.log("checkingmentor", userId, selectedMentorId)
     const [data, setData] = useState<any>({});
+
+
 
     useEffect(() => {
         const degree = localStorage.getItem('degree') || "{}";
@@ -110,17 +111,19 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ userAvatarSrc, userId, onSelec
     }, []);
 
     useEffect(() => {
-        if (selectedMentorId) {
-            const room = `${Math.min(userId, selectedMentorId)}_${Math.max(userId, selectedMentorId)}`;
-            socket.emit('join_room', { sender_id: userId, receiver_id: selectedMentorId });
+        const selectedId = selectedMentorId || selectedUserId;
+        console.log("checkingselectid==>", selectedId)
+        if (selectedId) {
+            const room = `${Math.min(data?.user_id, selectedId)}_${Math.max(data?.user_id, selectedId)}`;
+            socket.emit('join_room', { sender_id: data?.user_id, receiver_id: selectedId });
 
-            socket.emit('get_messages', { sender_id: userId, receiver_id: selectedMentorId });
+            socket.emit('get_messages', { sender_id: data?.user_id, receiver_id: selectedId });
 
             socket.on('message_history', (data) => {
                 setMessages(data.messages.map((msg: any) => ({
                     ...msg,
                     avatarSrc: msg.sender_id === userId ? userAvatarSrc : 'https://picsum.photos/50/50',
-                    username: msg.sender_id === userId ? 'You' : `Mentor ${msg.sender_id}`,
+                    username: msg.sender_id === userId ? 'You' : `User ${msg.sender_id}`,
                     timestamp: msg.timestamp,
                 })));
             });
@@ -134,7 +137,7 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ userAvatarSrc, userId, onSelec
                 socket.off('message_error');
             };
         }
-    }, [selectedMentorId]);
+    }, [selectedMentorId, selectedUserId]);
 
     useEffect(() => {
         socket.on('receive_message', (data: any) => {
@@ -143,7 +146,7 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ userAvatarSrc, userId, onSelec
                 ...prevMessages,
                 {
                     avatarSrc: sender_id === userId ? userAvatarSrc : 'https://picsum.photos/50/50',
-                    username: sender_id === userId ? 'You' : `Mentor ${sender_id}`,
+                    username: sender_id === userId ? 'You' : `User ${sender_id}`,
                     message,
                     timestamp,
                 },
@@ -156,8 +159,9 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ userAvatarSrc, userId, onSelec
     }, []);
 
     const handleSend = (message: string) => {
-        if (!selectedMentorId) {
-            console.error('No mentor selected to send message to.');
+        const selectedId = selectedMentorId || selectedUserId;
+        if (!selectedId) {
+            console.error('No recipient selected to send message to.');
             return;
         }
 
@@ -168,24 +172,26 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ userAvatarSrc, userId, onSelec
             timestamp: new Date().toISOString(),
         };
 
-        setMessages([...messages, newMessage]);
+        // setMessages([...messages, newMessage]);
 
+
+        console.log("sendingmeesage", "seebduf=>", data?.user_id, "recive==>", selectedId)
         socket.emit('send_message', {
-            sender_id: userId,
-            receiver_id: selectedMentorId,
+            sender_id: data?.user_id,
+            receiver_id: selectedId,
             message,
         });
     };
 
     const handleMentorSelect = (mentorId: number) => {
         setSelectedMentorId(mentorId);
-        setSelectedUserId(null); // Deselect user when a mentor is selected
+        setSelectedUserId(null);
         onSelectMentor(mentorId);
     };
 
     const handleUserSelect = (userId: number) => {
         setSelectedUserId(userId);
-        setSelectedMentorId(null); // Deselect mentor when a user is selected
+        setSelectedMentorId(null);
         onSelectMentor(userId);
     };
 
@@ -197,6 +203,7 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ userAvatarSrc, userId, onSelec
                     <div key={mentor.id} className="mb-2 p-2 border rounded" onClick={() => handleMentorSelect(mentor.id)}>
                         <div className="font-medium">{mentor.mentor_name}</div>
                         <div>{mentor.stream_name}</div>
+                        <div>{mentor.id}</div>
                     </div>
                 ))}
                 <h2 className="font-bold mb-2">Users</h2>
