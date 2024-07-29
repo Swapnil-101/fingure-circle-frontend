@@ -2,6 +2,7 @@ import Calendar from '@/components/contact/Celender';
 import { ChatBox } from '@/components/contact/ChatBox';
 import React from 'react';
 
+//@ts-ignore
 interface MessageProps {
     avatarSrc: string;
     username: string;
@@ -16,20 +17,18 @@ const Contact: React.FC = () => {
         setSelectedMentorId(mentorId);
     };
 
-    const [messages, setMessages] = React.useState<MessageProps[]>([
-        { avatarSrc: 'https://picsum.photos/50/50', username: 'John Doe', message: 'Hi, how can I help you?' },
-        { avatarSrc: 'https://picsum.photos/50/50', username: '', message: 'Sure, I can help with that.' },
-    ]);
+  
 
-    const handleSend = (message: string) => {
-        const newMessage: MessageProps = {
-            avatarSrc: 'https://picsum.photos/50/50',
-            username: '',
-            message,
-        };
 
-        setMessages([...messages, newMessage]);
-    };
+    // const handleSend = (message: string) => {
+    //     const newMessage: MessageProps = {
+    //         avatarSrc: 'https://picsum.photos/50/50',
+    //         username: '',
+    //         message,
+    //     };
+
+    //     setMessages([...messages, newMessage]);
+    // };
 
     return (
         <div className='md:flex justify-between'>

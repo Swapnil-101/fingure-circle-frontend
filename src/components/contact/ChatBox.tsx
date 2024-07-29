@@ -59,6 +59,7 @@ interface ChatBoxProps {
     selectedMentorIds: any;
 }
 
+//@ts-ignore
 export const ChatBox: React.FC<ChatBoxProps> = ({ userAvatarSrc, userId, onSelectMentor, selectedMentorIds }) => {
     const [messages, setMessages] = useState<MessageProps[]>([]);
     const [mentors, setMentors] = useState<any[]>([]);
@@ -114,6 +115,7 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ userAvatarSrc, userId, onSelec
         const selectedId = selectedMentorId || selectedUserId;
         console.log("checkingselectid==>", selectedId)
         if (selectedId) {
+            //@ts-ignore
             const room = `${Math.min(data?.user_id, selectedId)}_${Math.max(data?.user_id, selectedId)}`;
             socket.emit('join_room', { sender_id: data?.user_id, receiver_id: selectedId });
 
@@ -165,12 +167,12 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ userAvatarSrc, userId, onSelec
             return;
         }
 
-        const newMessage: MessageProps = {
-            avatarSrc: userAvatarSrc,
-            username: 'You',
-            message,
-            timestamp: new Date().toISOString(),
-        };
+        // const newMessage: MessageProps = {
+        //     avatarSrc: userAvatarSrc,
+        //     username: 'You',
+        //     message,
+        //     timestamp: new Date().toISOString(),
+        // };
 
         // setMessages([...messages, newMessage]);
 
