@@ -10,6 +10,7 @@ interface FindYourDreamProfileProps {
 
 const FindYourDreamProfile: React.FC<FindYourDreamProfileProps> = ({ infoData }: any) => {
 
+    //@ts-ignore
     const [data, setData] = useState<any>({})
 
     console.log("checkingstate==?", infoData)
