@@ -1,3 +1,4 @@
+import baseURL from '@/config/config';
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { toast } from "react-toastify";
@@ -38,7 +39,7 @@ const BecomeForm: React.FC<AppointmentFormProps> = () => {
 
     const token = localStorage.getItem('token');
     const handleFormSubmit = () => {
-        axios.post('https://course-recommendation-0qom.onrender.com/add_mentor', expertData, {
+        axios.post(`${baseURL}`, expertData, {
             headers: {
                 'Authorization': `Bearer ${token}`,
             }
