@@ -198,7 +198,7 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ userAvatarSrc, userId, onSelec
     };
 
     return (
-        <div className="h-[25rem] flex">
+        <div className="h-[40rem] flex">
             <div className="w-1/4 bg-gray-100 p-2 overflow-y-scroll">
                 <h2 className="font-bold mb-2">Mentors</h2>
                 {mentors.map((mentor) => (

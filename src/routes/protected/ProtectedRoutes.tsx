@@ -7,8 +7,10 @@ import BecomeMentor from '@/pages/BecomeMentor';
 import Contact from '@/pages/Contact';
 import FeedBack from '@/pages/FeedBack';
 import FutureProfile from '@/pages/FutureProfile';
+import Meeting from '@/pages/Meeting';
 import Mentor from '@/pages/Mentor';
 import MentorList from '@/pages/MentorList';
+import MyExperts from '@/pages/MyExperts';
 import Question from '@/pages/Question';
 import RazerPay from '@/pages/RazerPay';
 
@@ -66,6 +68,17 @@ const ProtectedRoutes = (user: any) => {
         {
             path: '/razerpay',
             component: <RazerPay />,
+        },
+
+        {
+            path: '/meeting',
+            component: <Meeting />,
+        },
+
+        
+        {
+            path: '/myexpert',
+            component: <MyExperts />,
         },
 
     ];
