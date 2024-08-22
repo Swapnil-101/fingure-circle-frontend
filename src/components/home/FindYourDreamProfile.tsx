@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
+import RecomSmall from './RecomSmall';
 
 
 
@@ -15,6 +16,7 @@ const FindYourDreamProfile: React.FC<FindYourDreamProfileProps> = ({ infoData }:
 
     console.log("checkingstate==?", infoData)
 
+    let degree = infoData?.stream_name
     useEffect(() => {
         const degree = localStorage.getItem('degree') || "{}";
         setData(JSON.parse(degree))
@@ -60,6 +62,10 @@ const FindYourDreamProfile: React.FC<FindYourDreamProfileProps> = ({ infoData }:
                         <span className="absolute inset-0 w-full h-full duration-300 delay-300 bg-gray-900 opacity-0 group-hover:opacity-100"></span>
                         <span className="relative transition-colors duration-300 delay-200 group-hover:text-white ease">Click Me</span>
                     </a>
+                </div>
+
+                <div>
+                    <RecomSmall degree={degree}/>
                 </div>
             </CardContent>
             <CardFooter className="flex flex-col gap-4">
