@@ -71,11 +71,11 @@ const ProtectedRoutes = (user: any) => {
         },
 
         {
-            path: '/meeting',
+            path: `/meeting/:id`,
             component: <Meeting />,
         },
 
-        
+
         {
             path: '/myexpert',
             component: <MyExperts />,
