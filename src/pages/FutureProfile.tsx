@@ -1,6 +1,6 @@
 
 import { FutureMain } from '@/components/future/FutureMain';
-import Recom from '@/components/future/Recom';
+// import Recom from '@/components/future/Recom';
 import baseURL from '@/config/config';
 // import baseURL from '@/config/config';
 import axios from 'axios';
@@ -163,8 +163,7 @@ const FutureProfile = () => {
 
     return (
         <div>
-            <FutureMain setInfoData2={setInfoData2} infoData={infoData} threeData={threeData} />
-            <Recom infoGetValue={infoGetValue} infoData2={infoData2} setInfoData2={setInfoData2} infoData={infoData} degree={degree} />
+            <FutureMain infoGetValue={infoGetValue} degree={degree} infoData2={infoData2} setInfoData2={setInfoData2} infoData={infoData} threeData={threeData} />
         </div>
     )
 }

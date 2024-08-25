@@ -67,10 +67,10 @@ const BasicInfo: React.FC = () => {
             });
 
             // Remove token from localStorage
-            localStorage.removeItem('token');
+            // localStorage.removeItem('token');
 
             // Reload the page
-            window.location.reload();
+            // window.location.reload();
         } catch (error) {
             console.error('Error:', error);
         }
