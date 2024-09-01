@@ -12,7 +12,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 const Home = () => {
   //basic info page check hook
-  useRedirectIfNotLoggedIn();
+  // useRedirectIfNotLoggedIn();
   const [infoData, setInfoData] = useState<any>();
 
   useEffect(() => {

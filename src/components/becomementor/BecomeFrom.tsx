@@ -39,7 +39,7 @@ const BecomeForm: React.FC<AppointmentFormProps> = () => {
 
     const token = localStorage.getItem('token');
     const handleFormSubmit = () => {
-        axios.post(`${baseURL}`, expertData, {
+        axios.post(`${baseURL}/add_mentor`, expertData, {
             headers: {
                 'Authorization': `Bearer ${token}`,
             }

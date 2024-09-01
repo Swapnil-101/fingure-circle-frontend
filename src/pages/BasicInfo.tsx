@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import baseURL from '@/config/config';
+import { useNavigate } from 'react-router-dom';
 
 // Sample suggestions for each field
 const suggestionsData = {
@@ -11,6 +12,8 @@ const suggestionsData = {
 
 const BasicInfo: React.FC = () => {
     const token = localStorage.getItem('token');
+  const navigate = useNavigate();
+
     const [userInfo, setUserInfo] = useState({
         first_name: '',
         last_name: '',
@@ -68,6 +71,7 @@ const BasicInfo: React.FC = () => {
 
             // Remove token from localStorage
             // localStorage.removeItem('token');
+             navigate('/');
 
             // Reload the page
             // window.location.reload();

@@ -56,7 +56,11 @@ const Login = () => {
 
       notifySuccess(); // Show success toast
       console.log('Login successful');
-      navigate('/');
+      if(response.data.data_fill == true){
+        navigate('/');
+      }else{
+        navigate('/basic-info');
+      }
     } catch (error) {
       notifyError(error); // Show error toast
       console.error('Login failed:', error);
