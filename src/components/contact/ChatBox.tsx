@@ -14,39 +14,67 @@ const Message: React.FC<MessageProps> = ({ avatarSrc, username, message, timesta
     <div className="flex items-center mb-2">
         <img className="w-8 h-8 rounded-full mr-2" src={avatarSrc} alt="User Avatar" />
         <div className="font-medium">{username}</div>
-        <div className="bg-white rounded-lg p-2 shadow mb-2 max-w-sm">{message}</div>
+        <div
+            className="bg-white rounded-lg p-2 shadow mb-2 max-w-sm"
+            dangerouslySetInnerHTML={{ __html: message }} // Render message as HTML
+        />
         <div className="text-xs text-gray-500 ml-2">{new Date(timestamp).toLocaleString()}</div>
     </div>
 );
 
 interface ChatInputProps {
     onSend: (message: string) => void;
+    onSendMeetingLink: () => void; // Add callback for meeting link
 }
 
-const ChatInput: React.FC<ChatInputProps> = ({ onSend }) => {
+const ChatInput: React.FC<ChatInputProps> = ({ onSend, onSendMeetingLink }) => {
     const [message, setMessage] = useState('');
 
-    const handleSend = () => {
+
+    const handleSendMessage = () => {
         onSend(message);
         setMessage('');
     };
 
+    const handleSendMeetingLink = () => {
+        onSendMeetingLink();
+        // setMeetingLink('');
+    };
+
     return (
         <div className="bg-gray-100 px-4 py-2">
-            <div className="flex items-center">
-                <input
-                    className="w-full border rounded-full py-2 px-4 mr-2"
-                    type="text"
-                    placeholder="Type your message..."
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                />
-                <button
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-full"
-                    onClick={handleSend}
-                >
-                    Send
-                </button>
+            <div className="flex flex-col">
+                <div className="flex items-center mb-2">
+                    <input
+                        className="w-full border rounded-full py-2 px-4 mr-2"
+                        type="text"
+                        placeholder="Type your message..."
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                    />
+                    <button
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-full"
+                        onClick={handleSendMessage}
+                    >
+                        Send
+                    </button>
+                    <button
+                        className="bg-green-500 hover:bg-green-700 text-white font-medium py-2 px-4  rounded-full"
+                        onClick={handleSendMeetingLink}
+                    >
+                        Send
+                    </button>
+                </div>
+                <div className="flex items-center">
+                    {/* <input
+                        className="w-full border rounded-full py-2 px-4 mr-2"
+                        type="text"
+                        placeholder="Enter meeting link..."
+                        value={meetingLink}
+                        onChange={(e) => setMeetingLink(e.target.value)}
+                    /> */}
+
+                </div>
             </div>
         </div>
     );
@@ -59,16 +87,13 @@ interface ChatBoxProps {
     selectedMentorIds: any;
 }
 
-//@ts-ignore
-export const ChatBox: React.FC<ChatBoxProps> = ({ userAvatarSrc, userId, onSelectMentor, selectedMentorIds }) => {
+export const ChatBox: React.FC<ChatBoxProps> = ({ userAvatarSrc, userId, onSelectMentor }) => {
     const [messages, setMessages] = useState<MessageProps[]>([]);
     const [mentors, setMentors] = useState<any[]>([]);
     const [users, setUsers] = useState<any[]>([]);
     const [selectedMentorId, setSelectedMentorId] = useState<number | null>(null);
     const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
     const [data, setData] = useState<any>({});
-
-
 
     useEffect(() => {
         const degree = localStorage.getItem('degree') || "{}";
@@ -113,10 +138,8 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ userAvatarSrc, userId, onSelec
 
     useEffect(() => {
         const selectedId = selectedMentorId || selectedUserId;
-        console.log("checkingselectid==>", selectedId)
         if (selectedId) {
-            //@ts-ignore
-            const room = `${Math.min(data?.user_id, selectedId)}_${Math.max(data?.user_id, selectedId)}`;
+            // const room = `${Math.min(data?.user_id, selectedId)}_${Math.max(data?.user_id, selectedId)}`;
             socket.emit('join_room', { sender_id: data?.user_id, receiver_id: selectedId });
 
             socket.emit('get_messages', { sender_id: data?.user_id, receiver_id: selectedId });
@@ -167,21 +190,32 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ userAvatarSrc, userId, onSelec
             return;
         }
 
-        // const newMessage: MessageProps = {
-        //     avatarSrc: userAvatarSrc,
-        //     username: 'You',
-        //     message,
-        //     timestamp: new Date().toISOString(),
-        // };
-
-        // setMessages([...messages, newMessage]);
-
-
-        console.log("sendingmeesage", "seebduf=>", data?.user_id, "recive==>", selectedId)
         socket.emit('send_message', {
             sender_id: data?.user_id,
             receiver_id: selectedId,
             message,
+        });
+    };
+
+    const handleSendMeetingLink = () => {
+        const selectedId = selectedMentorId || selectedUserId;
+        if (!selectedId) {
+            console.error('No recipient selected to send message to.');
+            return;
+        }
+
+        // Find the selected mentor's name
+        const selectedMentor = mentors.find(mentor => mentor.id === selectedMentorId);
+        const mentorName = selectedMentor ? selectedMentor.mentor_name : 'meeting';
+
+        const randomNumber = Math.floor(Math.random() * 10000);
+        const meetingLink = `meeting/${randomNumber}-${mentorName}`;
+        const clickableLink = `<a style="color: blue; font-weight: bold;"  href="${meetingLink}" target="_blank" rel="noopener noreferrer">Click on the Meeting link: ${meetingLink}</a>`;
+
+        socket.emit('send_message', {
+            sender_id: data?.user_id,
+            receiver_id: selectedId,
+            message: clickableLink,
         });
     };
 
@@ -221,7 +255,7 @@ export const ChatBox: React.FC<ChatBoxProps> = ({ userAvatarSrc, userId, onSelec
                         <Message key={index} {...msg} />
                     ))}
                 </div>
-                <ChatInput onSend={handleSend} />
+                <ChatInput onSend={handleSend} onSendMeetingLink={handleSendMeetingLink} />
             </div>
         </div>
     );

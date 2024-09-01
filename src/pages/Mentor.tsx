@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import useRedirectIfNotLoggedIn from '@/customHooks/useRedirectIfNotLoggedIn';
+// import useRedirectIfNotLoggedIn from '@/customHooks/useRedirectIfNotLoggedIn';
 import axios from 'axios';
 import baseURL from '@/config/config';
 import StaticFrom from '@/components/strip/StaticFrom';
