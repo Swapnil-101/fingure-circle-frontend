@@ -29,6 +29,9 @@ const Mentor = () => {
     const [isMentorClicked, setMentorClicked] = useState(false); // State to manage click on a mentor
     const [isMobileScreen, setIsMobileScreen] = useState(false); // State to detect mobile screen
     const [data, setData] = useState<any[]>([]); // State to store mentor data from API
+    const [dataTwo, setDataTwo] = useState<any[]>([]); // State to store mentor data from API
+    const [dataThree, setDataThree] = useState<any[]>([]); // State to store mentor data from API
+
     const [selectedMentor, setSelectedMentor] = useState<any>(null); // State to hold the selected mentor details
     const [checkoutFlag, setCheckoutFlag] = useState<any>(false); // State to hold the selected mentor details
 
@@ -42,6 +45,60 @@ const Mentor = () => {
                     }
                 });
                 setData(response?.data?.mentors_with_same_stream); // Update the state with the fetched data
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchInfoData();
+
+        const handleResize = () => {
+            setIsMobileScreen(window.innerWidth < 1024);
+        };
+
+        window.addEventListener("resize", handleResize);
+
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    useEffect(() => {
+        const fetchInfoData = async () => {
+            try {
+                const name = localStorage.getItem('token');
+                const response = await axios.get(`${baseURL}/mentors_by_similar_stream`, {
+                    headers: {
+                        'Authorization': `Bearer ${name}`,
+                    }
+                });
+                console.log("checkingmentorstwo-=>",response?.data?.mentors_with_similar_stream,response)
+                setDataTwo(response?.data?.mentors_with_similar_stream); // Update the state with the fetched data
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchInfoData();
+
+        const handleResize = () => {
+            setIsMobileScreen(window.innerWidth < 1024);
+        };
+
+        window.addEventListener("resize", handleResize);
+
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    useEffect(() => {
+        const fetchInfoData = async () => {
+            try {
+                const name = localStorage.getItem('token');
+                const response = await axios.get(`${baseURL}/all_mentors`, {
+                    headers: {
+                        'Authorization': `Bearer ${name}`,
+                    }
+                });
+                console.log("checkingmentorstwo-=>",response?.data?.all_mentors,response)
+                setDataThree(response?.data?.all_mentors); // Update the state with the fetched data
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -117,6 +174,77 @@ const Mentor = () => {
                                         </div>
                                     </div>
                                 ))}
+
+
+                            </div>
+
+                            <div className="grid gap-8 cols-gap-5 lg:grid-cols-1 mt-4">
+                                {dataTwo.map((mentor: any) => (
+                                    <div key={mentor?.mentor_id} className="relative p-px overflow-hidden transition duration-300 transform border rounded shadow-sm hover:scale-105 group hover:shadow-xl">
+                                        <div className="relative p-5 bg-white rounded-sm">
+                                            <div className="flex flex-col mb-2 lg:items-center lg:flex-row">
+                                                <div className="flex items-center justify-center w-10 h-10 mb-4 mr-2 rounded-full bg-indigo-50 lg:mb-0">
+                                                    {/* Add SVG Icon or Image */}
+                                                </div>
+                                                <h6 className="font-semibold leading-5">{mentor?.mentor_name}</h6>
+                                            </div>
+                                            <p className="mb-2 text-sm text-gray-900">{mentor?.description}</p>
+                                            {isMobileScreen ? (
+                                                <a
+                                                    href="/view-expert"
+                                                    className="inline-flex items-center text-sm font-semibold cursor-pointer transition-colors duration-200 text-deep-purple-accent-400 hover:text-deep-purple-800"
+                                                >
+                                                    Learn more
+                                                </a>
+                                            ) : (
+                                                <a
+                                                    onClick={() => handleMentorClick(mentor)}
+                                                    className="inline-flex items-center text-sm font-semibold cursor-pointer transition-colors duration-200 text-deep-purple-accent-400 hover:text-deep-purple-800"
+                                                >
+                                                    Learn more
+                                                </a>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+
+
+                            </div>
+                            
+                            <h1 className='text-center text-2xl font-bold my-[2rem] text-[#1c2533] mb-4'>All Mentors</h1>
+
+
+                            <div className="grid gap-8 cols-gap-5 lg:grid-cols-1 mt-4">
+                                {dataThree.map((mentor: any) => (
+                                    <div key={mentor?.mentor_id} className="relative p-px overflow-hidden transition duration-300 transform border rounded shadow-sm hover:scale-105 group hover:shadow-xl">
+                                        <div className="relative p-5 bg-white rounded-sm">
+                                            <div className="flex flex-col mb-2 lg:items-center lg:flex-row">
+                                                <div className="flex items-center justify-center w-10 h-10 mb-4 mr-2 rounded-full bg-indigo-50 lg:mb-0">
+                                                    {/* Add SVG Icon or Image */}
+                                                </div>
+                                                <h6 className="font-semibold leading-5">{mentor?.mentor_name}</h6>
+                                            </div>
+                                            <p className="mb-2 text-sm text-gray-900">{mentor?.description}</p>
+                                            {isMobileScreen ? (
+                                                <a
+                                                    href="/view-expert"
+                                                    className="inline-flex items-center text-sm font-semibold cursor-pointer transition-colors duration-200 text-deep-purple-accent-400 hover:text-deep-purple-800"
+                                                >
+                                                    Learn more
+                                                </a>
+                                            ) : (
+                                                <a
+                                                    onClick={() => handleMentorClick(mentor)}
+                                                    className="inline-flex items-center text-sm font-semibold cursor-pointer transition-colors duration-200 text-deep-purple-accent-400 hover:text-deep-purple-800"
+                                                >
+                                                    Learn more
+                                                </a>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+
+
                             </div>
                         </div>
                         {isMentorClicked && selectedMentor && (
