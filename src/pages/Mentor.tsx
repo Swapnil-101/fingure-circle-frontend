@@ -45,6 +45,8 @@ const Mentor = () => {
                     }
                 });
                 setData(response?.data?.mentors_with_same_stream); // Update the state with the fetched data
+                setDataTwo(response?.data?.related_mentors); // Update the state with the fetched data
+
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -61,32 +63,32 @@ const Mentor = () => {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    useEffect(() => {
-        const fetchInfoData = async () => {
-            try {
-                const name = localStorage.getItem('token');
-                const response = await axios.get(`${baseURL}/mentors_by_similar_stream`, {
-                    headers: {
-                        'Authorization': `Bearer ${name}`,
-                    }
-                });
-                console.log("checkingmentorstwo-=>",response?.data?.mentors_with_similar_stream,response)
-                setDataTwo(response?.data?.mentors_with_similar_stream); // Update the state with the fetched data
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
+    // useEffect(() => {
+    //     const fetchInfoData = async () => {
+    //         try {
+    //             const name = localStorage.getItem('token');
+    //             const response = await axios.get(`${baseURL}/mentors_by_similar_stream`, {
+    //                 headers: {
+    //                     'Authorization': `Bearer ${name}`,
+    //                 }
+    //             });
+    //             console.log("checkingmentorstwo-=>",response?.data?.mentors_with_similar_stream,response)
+    //             setDataTwo(response?.data?.mentors_with_similar_stream); // Update the state with the fetched data
+    //         } catch (error) {
+    //             console.error('Error fetching data:', error);
+    //         }
+    //     };
 
-        fetchInfoData();
+    //     fetchInfoData();
 
-        const handleResize = () => {
-            setIsMobileScreen(window.innerWidth < 1024);
-        };
+    //     const handleResize = () => {
+    //         setIsMobileScreen(window.innerWidth < 1024);
+    //     };
 
-        window.addEventListener("resize", handleResize);
+    //     window.addEventListener("resize", handleResize);
 
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
+    //     return () => window.removeEventListener("resize", handleResize);
+    // }, []);
 
     useEffect(() => {
         const fetchInfoData = async () => {
