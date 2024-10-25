@@ -6,13 +6,16 @@ import BasicInfo from '@/pages/BasicInfo';
 import BecomeMentor from '@/pages/BecomeMentor';
 import Contact from '@/pages/Contact';
 import FeedBack from '@/pages/FeedBack';
+import FeedBackForm from '@/pages/FeedBackForm';
 import FutureProfile from '@/pages/FutureProfile';
 import Meeting from '@/pages/Meeting';
 import Mentor from '@/pages/Mentor';
 import MentorList from '@/pages/MentorList';
+import MilneStonForm from '@/pages/MilneStonForm';
 import MyExperts from '@/pages/MyExperts';
 import Question from '@/pages/Question';
 import RazerPay from '@/pages/RazerPay';
+
 
 import Home from 'pages/Home';
 
@@ -79,6 +82,14 @@ const ProtectedRoutes = (user: any) => {
         {
             path: '/myexpert',
             component: <MyExperts />,
+        },
+        {
+            path: '/feedbackform',
+            component: <FeedBackForm />,
+        },
+        {
+            path: '/milestoneform',
+            component: <MilneStonForm />,
         },
 
     ];

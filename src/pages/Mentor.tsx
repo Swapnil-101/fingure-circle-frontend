@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import baseURL from '@/config/config';
 import StaticFrom from '@/components/strip/StaticFrom';
+import { toast } from 'react-toastify';
 
 // SchoolDetail component definition
 interface SchoolDetailProps {
@@ -33,7 +34,18 @@ const Mentor = () => {
     const [dataThree, setDataThree] = useState<any[]>([]); // State to store mentor data from API
 
     const [selectedMentor, setSelectedMentor] = useState<any>(null); // State to hold the selected mentor details
+    //@ts-ignore
     const [checkoutFlag, setCheckoutFlag] = useState<any>(false); // State to hold the selected mentor details
+
+    const [datafour, setDatafour] = useState<any>({})
+
+
+    const notifySuccess = () => toast.success("Added Mentor successfully!");
+    // const notifyError = (error: any) => toast.error(`Error: ${error}`);
+
+    const name = localStorage.getItem('token');
+
+
 
     useEffect(() => {
         const fetchInfoData = async () => {
@@ -63,32 +75,15 @@ const Mentor = () => {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    // useEffect(() => {
-    //     const fetchInfoData = async () => {
-    //         try {
-    //             const name = localStorage.getItem('token');
-    //             const response = await axios.get(`${baseURL}/mentors_by_similar_stream`, {
-    //                 headers: {
-    //                     'Authorization': `Bearer ${name}`,
-    //                 }
-    //             });
-    //             console.log("checkingmentorstwo-=>",response?.data?.mentors_with_similar_stream,response)
-    //             setDataTwo(response?.data?.mentors_with_similar_stream); // Update the state with the fetched data
-    //         } catch (error) {
-    //             console.error('Error fetching data:', error);
-    //         }
-    //     };
 
-    //     fetchInfoData();
+    console.log("checkingmenotr==>", selectedMentor)
 
-    //     const handleResize = () => {
-    //         setIsMobileScreen(window.innerWidth < 1024);
-    //     };
 
-    //     window.addEventListener("resize", handleResize);
+    useEffect(() => {
+        const degree = localStorage.getItem('degree') || "{}";
+        setDatafour(JSON.parse(degree))
+    }, [])
 
-    //     return () => window.removeEventListener("resize", handleResize);
-    // }, []);
 
     useEffect(() => {
         const fetchInfoData = async () => {
@@ -99,7 +94,7 @@ const Mentor = () => {
                         'Authorization': `Bearer ${name}`,
                     }
                 });
-                console.log("checkingmentorstwo-=>",response?.data?.all_mentors,response)
+                console.log("checkingmentorstwo-=>", response?.data?.all_mentors, response)
                 setDataThree(response?.data?.all_mentors); // Update the state with the fetched data
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -123,9 +118,94 @@ const Mentor = () => {
         setMentorClicked(true); // Set isMentorClicked to true to expand details
     };
 
-    const checkoutFN = () => {
-        setCheckoutFlag(!checkoutFlag)
-    }
+
+
+    // const checkoutFN = () => {
+    //     setCheckoutFlag(!checkoutFlag)
+    // }
+
+    // console.log("checkingmenotr==>",selectedMentor)
+
+    useEffect(() => {
+        const loadRazorpayScript = () => {
+            const script = document.createElement("script");
+            script.src = "https://checkout.razorpay.com/v1/checkout.js";
+            script.async = true;
+            script.onload = () => console.log("Razorpay script loaded successfully");
+            script.onerror = () => console.error("Error loading Razorpay script");
+            document.body.appendChild(script);
+        };
+        loadRazorpayScript();
+    }, []);
+
+    const checkoutFN = async () => {
+        try {
+            const mentor_id = selectedMentor?.mentor_id;
+
+            const response = await axios.post(`${baseURL}/create_order`, {
+                mentor_id,
+            },);
+
+            console.log("Order created successfully:", response.data);
+
+            const { id: order_id, amount, currency } = response.data;
+
+
+            const razorpayOptions = {
+                key: "rzp_test_D4OC2CLZNTebD7",
+                amount: amount,
+                currency: currency,
+                name: "Mentorship Payment",
+                description: "Payment for mentoring services",
+                order_id: order_id,
+                handler: async (paymentResponse: any) => {
+                    console.log("Payment response received:", paymentResponse);
+                    try {
+                        const verificationResponse = await axios.post(`${baseURL}/verify_payment`, {
+                            razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                            razorpay_order_id: paymentResponse.razorpay_order_id,
+                            razorpay_signature: paymentResponse.razorpay_signature,
+                            mentor_id,
+                            //@ts-ignore
+                            user_id: 1,
+                        });
+
+                        const response = await axios.post(`${baseURL}/assign_mentor`, {
+                            mentor_id: selectedMentor?.mentor_id,
+                            user_id: datafour?.user_id
+                        }, {
+                            headers: {
+                                'Authorization': `Bearer ${name}`,
+                            },
+                        });
+                        notifySuccess();
+                        console.log('Success:', response.data);
+
+                        console.log("Payment verified successfully:", verificationResponse.data);
+
+                    } catch (verificationError) {
+                        console.error("Payment verification failed:", verificationError);
+                    }
+                },
+                theme: {
+                    color: "#F37254",
+                },
+            };
+
+            //@ts-ignore
+            // Check if Razorpay script is loaded before opening modal
+            if (window.Razorpay) {
+                //@ts-ignore
+                const razorpay = new window.Razorpay(razorpayOptions);
+                razorpay.open();
+            } else {
+                console.error("Razorpay SDK failed to load.");
+            }
+
+        } catch (error) {
+            console.error("Error creating order:", error);
+        }
+    };
 
 
 
@@ -212,7 +292,7 @@ const Mentor = () => {
 
 
                             </div>
-                            
+
                             <h1 className='text-center text-2xl font-bold my-[2rem] text-[#1c2533] mb-4'>All Mentors</h1>
 
 
