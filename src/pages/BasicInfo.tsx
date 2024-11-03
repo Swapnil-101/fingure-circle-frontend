@@ -404,32 +404,32 @@ const BasicInfo: React.FC = () => {
                     </div>
 
                     <div className="relative">
-                        <label className="text-gray-700 dark:text-gray-200" htmlFor="bachelorsDegree">
-                            Bachelors Degree
-                        </label>
-                        <input
-                            type="text"
-                            id="bachelorsDegree"
-                            placeholder="Bachelors Degree"
-                            name="bachelorsDegree"
-                            value={userInfo.bachelors_degree}
-                            onChange={(e) => handleInputChange(e, 'bachelors_degree')}
-                            className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
-                        />
-                        {activeField === 'bachelors_degree' && suggestions.length > 0 && (
-                            <ul className="absolute z-10 w-full bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600">
-                                {suggestions.map((suggestion, index) => (
-                                    <li
-                                        key={index}
-                                        onClick={() => handleSuggestionClick('bachelors_degree', suggestion)}
-                                        className="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
-                                    >
-                                        {suggestion}
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                    </div>
+    <label className="text-gray-700 dark:text-gray-200" htmlFor="bachelorsDegree">
+        Bachelors Degree
+    </label>
+    <input
+        type="text"
+        id="bachelorsDegree"
+        placeholder="Bachelors Degree"
+        name="bachelorsDegree"
+        value={userInfo.bachelors_degree}
+        onChange={(e) => handleInputChange(e, 'bachelors_degree')}
+        className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
+    />
+    {activeField === 'bachelors_degree' && suggestions.length > 0 && (
+        <ul className="absolute z-10 w-full bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 max-h-48 overflow-y-auto">
+            {suggestions.map((suggestion, index) => (
+                <li
+                    key={index}
+                    onClick={() => handleSuggestionClick('bachelors_degree', suggestion)}
+                    className="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                    {suggestion}
+                </li>
+            ))}
+        </ul>
+    )}
+</div>
 
                     <div className="relative">
                         <label className="text-gray-700 dark:text-gray-200" htmlFor="mastersDegree">
@@ -445,7 +445,7 @@ const BasicInfo: React.FC = () => {
                             className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
                         />
                         {activeField === 'masters_degree' && suggestions.length > 0 && (
-                            <ul className="absolute z-10 w-full bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600">
+                            <ul className="absolute z-10 w-full bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 max-h-48 overflow-y-auto">
                                 {suggestions.map((suggestion, index) => (
                                     <li
                                         key={index}
@@ -473,7 +473,7 @@ const BasicInfo: React.FC = () => {
                             className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
                         />
                         {activeField === 'certification' && suggestions.length > 0 && (
-                            <ul className="absolute z-10 w-full bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600">
+                            <ul className="absolute z-10 w-full bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 max-h-48 overflow-y-auto">
                                 {suggestions.map((suggestion, index) => (
                                     <li
                                         key={index}
