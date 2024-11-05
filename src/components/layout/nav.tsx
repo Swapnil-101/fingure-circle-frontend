@@ -1,14 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import logo from '../../assets/image (1).png';
+import socket from '../../config/socket'; // Import the socket instance
 
-interface NavProps {}
+interface NavProps { }
 
 const Nav: React.FC<NavProps> = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [notifications, setNotifications] = useState<string[]>([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [hasNewNotification, setHasNewNotification] = useState(false);
+  const userId = localStorage.getItem('userId'); // Retrieve user ID from localStorage
+
+  useEffect(() => {
+    // Connect to socket server and listen for notification events
+    socket.on('notification', (notification: { userId: string; message: string; type: string }) => {
+      // Check if the notification is intended for this user or mentor
+      if (notification.userId === userId || notification.type === 'mentor') {
+        setNotifications((prev) => [notification.message, ...prev]);
+        setHasNewNotification(true);
+      }
+    });
+
+    return () => {
+      socket.off('notification');
+    };
+  }, [userId]);
 
   const handleLogout = () => {
-    localStorage.clear(); // Clear all items in localStorage
-    window.location.reload(); // Reload the page
+    localStorage.clear();
+    window.location.reload();
+  };
+
+  const toggleNotifications = () => {
+    setShowNotifications(!showNotifications);
+    setHasNewNotification(false);
   };
 
   return (
@@ -66,7 +91,7 @@ const Nav: React.FC<NavProps> = () => {
             className={`absolute inset-x-0 z-20 w-full px-6 py-4 transition-all duration-300 ease-in-out bg-white dark:bg-gray-800 ${isOpen
               ? 'translate-x-0 opacity-100'
               : 'opacity-0 -translate-x-full'
-            } lg:mt-0 lg:p-0 lg:top-0 lg:relative lg:bg-transparent lg:w-auto lg:opacity-100 lg:translate-x-0 lg:flex lg:items-center`}
+              } lg:mt-0 lg:p-0 lg:top-0 lg:relative lg:bg-transparent lg:w-auto lg:opacity-100 lg:translate-x-0 lg:flex lg:items-center`}
           >
             <div className="flex flex-col -mx-6 lg:flex-row lg:items-center lg:mx-8">
               <a
@@ -96,6 +121,51 @@ const Nav: React.FC<NavProps> = () => {
             </div>
 
             <div className="flex items-center mt-4 lg:mt-0">
+              {/* Notification Icon */}
+              <button
+                type="button"
+                onClick={toggleNotifications}
+                className="relative focus:outline-none"
+                aria-label="notifications"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-6 h-6 text-gray-700 dark:text-gray-200"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-5-5.917V5a3 3 0 00-6 0v.083A6.002 6.002 0 002 11v3.159c0 .538-.214 1.055-.595 1.436L1 17h5m6 0v1a3 3 0 01-6 0v-1m6 0H9"
+                  />
+                </svg>
+                {hasNewNotification && (
+                  <span className="absolute top-0 right-0 w-3 h-3 bg-red-600 rounded-full"></span>
+                )}
+              </button>
+
+              {/* Notifications Dropdown */}
+              {showNotifications && (
+                <div className="absolute right-0 mt-2 w-72 bg-white rounded-md shadow-lg">
+                  <div className="px-4 py-2 text-sm font-semibold text-gray-700">Notifications</div>
+                  <ul className="divide-y divide-gray-200">
+                    {notifications.length > 0 ? (
+                      notifications.map((notif, index) => (
+                        <li key={index} className="px-4 py-2 text-sm text-gray-600">
+                          {notif}
+                        </li>
+                      ))
+                    ) : (
+                      <li className="px-4 py-2 text-sm text-gray-600">No notifications</li>
+                    )}
+                  </ul>
+                </div>
+              )}
+
+              {/* Profile Icon */}
               <button
                 type="button"
                 className="flex items-center focus:outline-none"
@@ -115,10 +185,7 @@ const Nav: React.FC<NavProps> = () => {
               </button>
 
               {/* Logout Button */}
-              <button
-                onClick={handleLogout}
-                className=" ml-[2rem]"
-              >
+              <button onClick={handleLogout} className=" ml-[2rem]">
                 Logout
               </button>
             </div>
