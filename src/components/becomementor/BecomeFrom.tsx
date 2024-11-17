@@ -8,7 +8,9 @@ interface AppointmentFormProps { }
 const BecomeForm: React.FC<AppointmentFormProps> = () => {
 
     const [degree, setDegree] = useState<any>({});
-    console.log(degree)
+    const [degreeTwo, setDegreeTwo] = useState<any>({});
+
+    
     const [expertData, setExpertData] = useState({
         mentor_name: '',
         profile_photo: "",
@@ -22,18 +24,30 @@ const BecomeForm: React.FC<AppointmentFormProps> = () => {
         country: "",
         sender_email: '',
         username: '',
+        user_id: '',
     });
+
+    console.log(degree, degreeTwo,expertData)
 
     const notifySuccess = () => toast.success("Request for becoming mentor sent successfully!");
     const notifyError = (error: any) => toast.error(`Error: ${error}`);
 
     useEffect(() => {
         const userLocalData = localStorage.getItem('userlocaldata') || '{}';
+        const Current = localStorage.getItem('degree') || '{}';
+
         const parsedData = JSON.parse(userLocalData);
+        const cureentparse = JSON.parse(Current);
+        setDegreeTwo(cureentparse);
+
         setDegree(parsedData);
         setExpertData(prevState => ({
             ...prevState,
             username: parsedData.username
+        }));
+        setExpertData(prevState => ({
+            ...prevState,
+            user_id: cureentparse.user_id
         }));
     }, []);
 

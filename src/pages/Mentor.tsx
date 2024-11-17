@@ -141,6 +141,7 @@ const Mentor = () => {
     const checkoutFN = async () => {
         try {
             const mentor_id = selectedMentor?.mentor_id;
+            
 
             const response = await axios.post(`${baseURL}/create_order`, {
                 mentor_id,
@@ -167,12 +168,13 @@ const Mentor = () => {
                             razorpay_signature: paymentResponse.razorpay_signature,
                             mentor_id,
                             //@ts-ignore
-                            user_id: 1,
+                            user_id: datafour?.user_id,
                         });
 
                         const response = await axios.post(`${baseURL}/assign_mentor`, {
                             mentor_id: selectedMentor?.mentor_id,
-                            user_id: datafour?.user_id
+                            user_id: datafour?.user_id,
+                            mentor_user_id:selectedMentor?.user_id
                         }, {
                             headers: {
                                 'Authorization': `Bearer ${name}`,

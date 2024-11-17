@@ -9,31 +9,53 @@ const Nav: React.FC<NavProps> = () => {
   const [notifications, setNotifications] = useState<string[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [hasNewNotification, setHasNewNotification] = useState(false);
-  const userId = localStorage.getItem('userId'); // Retrieve user ID from localStorage
+  const [datafour, setDatafour] = useState<any>({});
 
+ 
   useEffect(() => {
-    // Connect to socket server and listen for notification events
-    socket.on('notification', (notification: { userId: string; message: string; type: string }) => {
-      // Check if the notification is intended for this user or mentor
-      if (notification.userId === userId || notification.type === 'mentor') {
-        setNotifications((prev) => [notification.message, ...prev]);
-        setHasNewNotification(true);
-      }
-    });
+    const degree = localStorage.getItem('degree') || "{}";
+    const parsedData = JSON.parse(degree);
+    setDatafour(parsedData);
+
+    
+    // Join the notification room and get notifications when user_id is available
+    if (parsedData?.user_id) {
+      socket.emit('join', { user_id: parsedData?.user_id });
+
+     
+      socket.emit('get_notifications', { user_id: parsedData?.user_id });
+
+      
+      socket.on('notifications', (notificationMessages) => {
+        if (Array.isArray(notificationMessages) && notificationMessages.length > 0) {
+          setNotifications(notificationMessages);
+          setHasNewNotification(true); // Set new notification flag
+        } else {
+          setNotifications([]);
+          setHasNewNotification(false);
+        }
+      });
+    }
 
     return () => {
-      socket.off('notification');
+      socket.off('notifications');
     };
-  }, [userId]);
+  }, []); 
 
   const handleLogout = () => {
     localStorage.clear();
     window.location.reload();
   };
-
-  const toggleNotifications = () => {
+  
+  const toggleNotifications = (event: React.MouseEvent) => {
+    event.stopPropagation(); // Prevents the event from bubbling up
     setShowNotifications(!showNotifications);
     setHasNewNotification(false);
+  };
+
+  const handleNotificationClick = (notification: string) => {
+    console.log('Notification clicked:', notification);
+    // Add your logic here (e.g., navigate to a page, mark as read, etc.)
   };
 
   return (
@@ -102,19 +124,19 @@ const Nav: React.FC<NavProps> = () => {
               </a>
               <a
                 href="/basic-info"
-                className="px-3 py-2 mx-3 mt-2 text-gray-700 transition-colors duration-300 transform rounded-md lg:mt-0 dark:text-gray-200 hover:bg-gray-100 dark:hover-bg-gray-700"
+                className="px-3 py-2 mx-3 mt-2 text-gray-700 transition-colors duration-300 transform rounded-md lg:mt-0 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
                 Basic Information
               </a>
               <a
                 href="/expert"
-                className="px-3 py-2 mx-3 mt-2 text-gray-700 transition-colors duration-300 transform rounded-md lg:mt-0 dark:text-gray-200 hover:bg-gray-100 dark:hover-bg-gray-700"
+                className="px-3 py-2 mx-3 mt-2 text-gray-700 transition-colors duration-300 transform rounded-md lg:mt-0 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
                 Experts
               </a>
               <a
                 href="/myexpert"
-                className="px-3 py-2 mx-3 mt-2 text-gray-700 transition-colors duration-300 transform rounded-md lg:mt-0 dark:text-gray-200 hover:bg-gray-100 dark:hover-bg-gray-700"
+                className="px-3 py-2 mx-3 mt-2 text-gray-700 transition-colors duration-300 transform rounded-md lg:mt-0 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
                 My Experts
               </a>
@@ -149,13 +171,17 @@ const Nav: React.FC<NavProps> = () => {
 
               {/* Notifications Dropdown */}
               {showNotifications && (
-                <div className="absolute right-0 mt-2 w-72 bg-white rounded-md shadow-lg">
+                <div className={`absolute right-0 mt-[10rem] w-72 bg-white rounded-md shadow-lg transition-opacity duration-300 ease-in-out ${showNotifications ? 'opacity-100' : 'opacity-0'}`}>
                   <div className="px-4 py-2 text-sm font-semibold text-gray-700">Notifications</div>
                   <ul className="divide-y divide-gray-200">
                     {notifications.length > 0 ? (
                       notifications.map((notif, index) => (
-                        <li key={index} className="px-4 py-2 text-sm text-gray-600">
-                          {notif}
+                        <li
+                          key={index}
+                          className="px-4 py-2 text-sm text-gray-600 cursor-pointer hover:bg-gray-100"
+                          onClick={() => handleNotificationClick(notif)} // Add onClick handler
+                        >
+                          {notif?.message}
                         </li>
                       ))
                     ) : (
@@ -173,19 +199,19 @@ const Nav: React.FC<NavProps> = () => {
               >
                 <div className="w-8 h-8 overflow-hidden border-2 border-gray-400 rounded-full">
                   <img
-                    src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80"
+                    src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=200&q=60"
+                    alt="Profile"
                     className="object-cover w-full h-full"
-                    alt="avatar"
                   />
                 </div>
-
-                <h3 className="mx-2 text-gray-700 dark:text-gray-200 lg:hidden">
-                  Khatab wedaa
-                </h3>
               </button>
 
               {/* Logout Button */}
-              <button onClick={handleLogout} className=" ml-[2rem]">
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="px-3 py-2 mx-3 text-gray-700 transition-colors duration-300 transform rounded-md hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
+              >
                 Logout
               </button>
             </div>
