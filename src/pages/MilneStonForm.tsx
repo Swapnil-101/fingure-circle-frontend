@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import axios from 'axios';
+import baseURL from '@/config/config';
 
 interface Milestone {
   milestone: string;
@@ -28,9 +30,42 @@ const MilestoneForm: React.FC = () => {
     setMilestones(updatedMilestones);
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    console.log(milestones);
+
+    // Get token from localStorage
+    const token = localStorage.getItem('token');
+
+    // Make sure token exists before proceeding
+    if (!token) {
+      console.error('Token not found!');
+      return;
+    }
+
+    const data = {
+      user_id: 1, // Replace with dynamic user ID if needed
+      mentor_id: 1, // Replace with dynamic mentor ID if needed
+      milestone: milestones, // The milestone data you want to send
+    };
+
+    try {
+      // Make the POST request to the backend with the token in Authorization header
+      const response = await axios.post(
+        `${baseURL}/milestone`, // Replace with your backend URL
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log('Response:', response.data);
+      alert('Milestones stored successfully!');
+    } catch (error) {
+      console.error('Error storing milestones:', error);
+      alert('Failed to store milestones.');
+    }
   };
 
   return (

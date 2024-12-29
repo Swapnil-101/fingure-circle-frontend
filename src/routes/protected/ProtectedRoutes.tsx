@@ -9,6 +9,7 @@ import FeedBack from '@/pages/FeedBack';
 import FeedBackForm from '@/pages/FeedBackForm';
 import FutureProfile from '@/pages/FutureProfile';
 import Meeting from '@/pages/Meeting';
+// import MeetingCalls from '@/pages/MeetingCalls';
 import Mentor from '@/pages/Mentor';
 import MentorList from '@/pages/MentorList';
 import MilneStonForm from '@/pages/MilneStonForm';
@@ -91,6 +92,10 @@ const ProtectedRoutes = (user: any) => {
             path: '/milestoneform',
             component: <MilneStonForm />,
         },
+        // {
+        //     path: '/v2/meetingcall',
+        //     component: <MeetingCalls />,
+        // },
 
     ];
 

@@ -39,6 +39,8 @@ const Mentor = () => {
 
     const [datafour, setDatafour] = useState<any>({})
 
+    console.log("checklingfour-->", datafour)
+
 
     const notifySuccess = () => toast.success("Added Mentor successfully!");
     // const notifyError = (error: any) => toast.error(`Error: ${error}`);
@@ -51,13 +53,14 @@ const Mentor = () => {
         const fetchInfoData = async () => {
             try {
                 const name = localStorage.getItem('token');
-                const response = await axios.get(`${baseURL}/mentors_by_stream`, {
+                const response = await axios.get(`${baseURL}/recommended_mentors`, {
                     headers: {
                         'Authorization': `Bearer ${name}`,
                     }
                 });
-                setData(response?.data?.mentors_with_same_stream); // Update the state with the fetched data
-                setDataTwo(response?.data?.related_mentors); // Update the state with the fetched data
+                console.log("response==?", response?.data?.mentors)
+                setData(response?.data?.mentors); // Update the state with the fetched data
+                // setDataTwo(response?.data?.related_mentors); // Update the state with the fetched data
 
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -141,7 +144,7 @@ const Mentor = () => {
     const checkoutFN = async () => {
         try {
             const mentor_id = selectedMentor?.mentor_id;
-            
+
 
             const response = await axios.post(`${baseURL}/create_order`, {
                 mentor_id,
@@ -171,10 +174,10 @@ const Mentor = () => {
                             user_id: datafour?.user_id,
                         });
 
-                        const response = await axios.post(`${baseURL}/assign_mentor`, {
+                        const response = await axios.post(`${baseURL}/new_assign_mentor`, {
                             mentor_id: selectedMentor?.mentor_id,
                             user_id: datafour?.user_id,
-                            mentor_user_id:selectedMentor?.user_id
+                            mentor_user_id: selectedMentor?.user_id
                         }, {
                             headers: {
                                 'Authorization': `Bearer ${name}`,
@@ -237,9 +240,9 @@ const Mentor = () => {
                                                 <div className="flex items-center justify-center w-10 h-10 mb-4 mr-2 rounded-full bg-indigo-50 lg:mb-0">
                                                     {/* Add SVG Icon or Image */}
                                                 </div>
-                                                <h6 className="font-semibold leading-5">{mentor?.mentor_name}</h6>
+                                                <h6 className="font-semibold leading-5">{mentor?.name}</h6>
                                             </div>
-                                            <p className="mb-2 text-sm text-gray-900">{mentor?.description}</p>
+                                            <p className="mb-2 text-sm text-gray-900">{mentor?.background}</p>
                                             {isMobileScreen ? (
                                                 <a
                                                     href="/view-expert"
@@ -295,41 +298,7 @@ const Mentor = () => {
 
                             </div>
 
-                            <h1 className='text-center text-2xl font-bold my-[2rem] text-[#1c2533] mb-4'>All Mentors</h1>
 
-
-                            <div className="grid gap-8 cols-gap-5 lg:grid-cols-1 mt-4">
-                                {dataThree.map((mentor: any) => (
-                                    <div key={mentor?.mentor_id} className="relative p-px overflow-hidden transition duration-300 transform border rounded shadow-sm hover:scale-105 group hover:shadow-xl">
-                                        <div className="relative p-5 bg-white rounded-sm">
-                                            <div className="flex flex-col mb-2 lg:items-center lg:flex-row">
-                                                <div className="flex items-center justify-center w-10 h-10 mb-4 mr-2 rounded-full bg-indigo-50 lg:mb-0">
-                                                    {/* Add SVG Icon or Image */}
-                                                </div>
-                                                <h6 className="font-semibold leading-5">{mentor?.mentor_name}</h6>
-                                            </div>
-                                            <p className="mb-2 text-sm text-gray-900">{mentor?.description}</p>
-                                            {isMobileScreen ? (
-                                                <a
-                                                    href="/view-expert"
-                                                    className="inline-flex items-center text-sm font-semibold cursor-pointer transition-colors duration-200 text-deep-purple-accent-400 hover:text-deep-purple-800"
-                                                >
-                                                    Learn more
-                                                </a>
-                                            ) : (
-                                                <a
-                                                    onClick={() => handleMentorClick(mentor)}
-                                                    className="inline-flex items-center text-sm font-semibold cursor-pointer transition-colors duration-200 text-deep-purple-accent-400 hover:text-deep-purple-800"
-                                                >
-                                                    Learn more
-                                                </a>
-                                            )}
-                                        </div>
-                                    </div>
-                                ))}
-
-
-                            </div>
                         </div>
                         {isMentorClicked && selectedMentor && (
                             // Mentor Details Section
@@ -340,14 +309,14 @@ const Mentor = () => {
                                             <div className="w-full px-4">
                                                 <div className="mb-6">
                                                     <div>
-                                                        <img className="object-cover w-32 h-32 rounded-full ring-gray-300" src="https://i.postimg.cc/0jwyVgqz/Microprocessor1-removebg-preview.png" alt="ProfilePic" />
+                                                        <img className="object-cover w-32 h-32 rounded-full ring-gray-300" src={selectedMentor?.profile_picture} alt="ProfilePic" />
                                                         <span className="px-2.5 py-0.5 text-xs text-blue-600 bg-blue-100 dark:bg-gray-700 rounded-xl dark:text-gray-200">
                                                             Mentor/Expert
                                                         </span>
                                                     </div>
                                                     <div>
                                                         <h2 className="max-w-xl mt-6 mb-6 text-xl font-semibold leading-loose tracking-wide text-gray-700 md:text-2xl dark:text-gray-300">
-                                                            Name: {selectedMentor?.mentor_name}
+                                                            Name: {selectedMentor?.name}
                                                         </h2>
                                                         <div className="flex flex-wrap items-center mb-6">
                                                             <ul className="flex mb-4 mr-2 lg:mb-0">
@@ -365,10 +334,10 @@ const Mentor = () => {
                                                         <div className="p-3 lg:p-5">
                                                             <div className="p-2 rounded-xl lg:p-6 dark:bg-gray-800 bg-gray-50">
                                                                 <div className="flex flex-wrap justify-center gap-x-10 gap-y-4">
-                                                                    <SchoolDetail label="School Stream" value={selectedMentor?.stream} />
-                                                                    <SchoolDetail label="Highest Degree" value={selectedMentor?.highest_degree} />
+                                                                    <SchoolDetail label="MileStones" value={selectedMentor?.milestones} />
+                                                                    <SchoolDetail label="Highest Degree" value={selectedMentor?.degree} />
                                                                     <SchoolDetail label="Expertise" value={selectedMentor?.expertise} />
-                                                                    <SchoolDetail label="Country" value={selectedMentor?.country} />
+                                                                    <SchoolDetail label="Rank" value="1" />
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -377,7 +346,7 @@ const Mentor = () => {
                                                 <div className="mb-6">
                                                     <h2 className="mb-2 text-lg font-bold text-gray-700 dark:text-gray-400">Description :</h2>
                                                     <p className="text-base text-gray-500 dark:text-gray-400">
-                                                        {selectedMentor?.description}
+                                                        {selectedMentor?.background}
                                                     </p>
                                                 </div>
                                             </div>
@@ -389,7 +358,7 @@ const Mentor = () => {
                                                             <div className="flex items-center justify-between pb-6 mb-6 border-b">
                                                                 <div>
                                                                     <p className="text-sm font-medium leading-4 text-gray-500 dark:text-gray-400">Starting From</p>
-                                                                    <p className="text-2xl mt-2 font-bold leading-4 text-blue-600 dark:text-gray-200">₹{selectedMentor?.fees}</p>
+                                                                    <p className="text-2xl mt-2 font-bold leading-4 text-blue-600 dark:text-gray-200">₹{selectedMentor?.fee}</p>
                                                                 </div>
 
                                                             </div>

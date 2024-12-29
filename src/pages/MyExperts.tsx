@@ -34,12 +34,13 @@ const MyExperts = () => {
         const fetchMentors = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const response = await axios.get(`${baseURL}/assigned_mentors`, {
+                const response = await axios.get(`${baseURL}/get_assigned_mentors`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     }
                 });
-                setMentors(response.data.assigned_mentors);
+                console.log("response.data==>", response.data)
+                setMentors(response.data.mentors);
             } catch (error) {
                 console.error('Error fetching mentors:', error);
             }
@@ -63,15 +64,15 @@ const MyExperts = () => {
                     >
                         <img
                             className="mr-4 w-12 sm:mr-0 sm:h-32 sm:w-32"
-                            src="https://swiperjs.com/images/projects/framework7.svg"
+                            src={project?.profile_picture}
                             alt={project.altText}
                         />
                         <div>
                             <div className="font-semibold text-black dark:text-white sm:mt-4 sm:mb-2">
-                                {project.mentor_name}
+                                {project.name}
                             </div>
                             <div className="text-sm opacity-75">
-                                {project.description}
+                                {project.background}
                             </div>
                         </div>
                     </a>

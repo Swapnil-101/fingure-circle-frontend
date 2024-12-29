@@ -1,3 +1,4 @@
+import MeetingCalls from '@/pages/MeetingCalls';
 import Login from 'pages/Login';
 import Register from 'pages/Register';
 
@@ -9,6 +10,10 @@ const PublicRoutes = [
     {
         path: '/register',
         component: <Register />,
+    },
+    {
+        path: '/v2/meetingcall',
+        component: <MeetingCalls/>,
     },
 ]
 
