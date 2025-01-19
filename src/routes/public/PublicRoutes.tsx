@@ -12,7 +12,7 @@ const PublicRoutes = [
         component: <Register />,
     },
     {
-        path: '/v2/meetingcall',
+        path: '/v2/meetingcall/:id',
         component: <MeetingCalls/>,
     },
 ]

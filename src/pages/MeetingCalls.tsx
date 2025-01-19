@@ -1,131 +1,295 @@
-import { useState } from 'react';
-import { AlertCircle } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import Peer, { DataConnection } from 'peerjs';
+import { useNavigate } from 'react-router-dom';
 import MeetingCall from '@/components/MeetingCall';
+import CryptoJS from 'crypto-js';
 
- const MeetingCalls = () => {
+interface PeerConnection {
+    peer: string;
+    conn: DataConnection;
+}
+
+const MeetingCallHandler = () => {
     const [roomId, setRoomId] = useState('');
     const [password, setPassword] = useState('');
     const [isHost, setIsHost] = useState(false);
     const [joinedRoom, setJoinedRoom] = useState(false);
     const [error, setError] = useState('');
+    const navigate = useNavigate();
+    const secretKey = 'meetingkeys';
+    const peerRef = useRef<Peer | null>(null);
+    const connectionAttempts = useRef(0);
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY = 2000;
+    const MAX_RECONNECTION_ATTEMPTS = 5;
 
-    const validateInput = () => {
-        if (!roomId.trim()) {
-            setError('Please enter a room ID');
-            return false;
-        }
-        if (roomId.length < 4) {
-            setError('Room ID must be at least 4 characters');
-            return false;
-        }
-        if (isHost && !password.trim()) {
-            setError('Please enter a password');
-            return false;
-        }
-        if (isHost && password.length < 6) {
-            setError('Password must be at least 6 characters');
-            return false;
-        }
-        return true;
-    };
-
-    const createRoom = () => {
-        setIsHost(true);
-        if (validateInput()) {
-            setError('');
-            setJoinedRoom(true);
-        }
-    };
-
-    const joinRoom = () => {
-        setIsHost(false);
-        if (validateInput()) {
-            setError('');
-            setJoinedRoom(true);
+    // Function to handle peer connection errors and reconnection
+    const handlePeerError = async (peer: Peer, error: Error) => {
+        console.error('Peer connection error:', error);
+        
+        if (connectionAttempts.current < MAX_RECONNECTION_ATTEMPTS) {
+            connectionAttempts.current += 1;
+            console.log(`Attempting reconnection ${connectionAttempts.current}/${MAX_RECONNECTION_ATTEMPTS}`);
+            
+            try {
+                await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+                peer.reconnect();
+            } catch (reconnectError) {
+                console.error('Reconnection failed:', reconnectError);
+                if (connectionAttempts.current === MAX_RECONNECTION_ATTEMPTS) {
+                    setError('Failed to connect to the room after multiple attempts');
+                }
+            }
+        } else {
+            setError('Connection to room failed');
         }
     };
 
-    if (joinedRoom) {
-        return <MeetingCall roomId={roomId} password={password} isHost={isHost} />;
+    // Function to create and setup a new peer connection
+    const setupPeer = (peerId: string): Promise<Peer> => {
+        return new Promise((resolve, reject) => {
+            const peer = new Peer(peerId, {
+                host: '0.peerjs.com',
+                secure: true,
+                port: 443,
+                config: {
+                    iceServers: [
+                        { urls: 'stun:stun.l.google.com:19302' },
+                        { urls: 'stun:stun1.l.google.com:19302' },
+                        { urls: 'stun:global.stun.twilio.com:3478' }
+                    ]
+                },
+                debug: 2
+            });
+
+            const timeout = setTimeout(() => {
+                peer.destroy();
+                reject(new Error('Peer creation timeout'));
+            }, 15000);
+
+            peer.on('open', () => {
+                clearTimeout(timeout);
+                console.log('Peer connection established:', peerId);
+                resolve(peer);
+            });
+
+            peer.on('error', (err) => {
+                clearTimeout(timeout);
+                handlePeerError(peer, err);
+                reject(err);
+            });
+
+            peer.on('disconnected', () => {
+                console.log('Peer disconnected, attempting to reconnect...');
+                peer.reconnect();
+            });
+        });
+    };
+
+    // Function to verify room existence
+    const verifyRoom = async (roomId: string): Promise<boolean> => {
+        try {
+            const tempPeerId = `temp-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+            const tempPeer = await setupPeer(tempPeerId);
+            
+            return new Promise((resolve) => {
+                const conn = tempPeer.connect(roomId, {
+                    reliable: true,
+                    metadata: { type: 'roomCheck' }
+                });
+
+                const timeout = setTimeout(() => {
+                    tempPeer.destroy();
+                    resolve(false);
+                }, 5000);
+
+                conn.on('open', () => {
+                    clearTimeout(timeout);
+                    tempPeer.destroy();
+                    resolve(true);
+                });
+
+                conn.on('error', () => {
+                    clearTimeout(timeout);
+                    tempPeer.destroy();
+                    resolve(false);
+                });
+            });
+        } catch {
+            return false;
+        }
+    };
+
+    // Function to handle room connection
+    const connectToRoom = async (peer: Peer, hostId: string, password: string): Promise<void> => {
+        let attempts = 0;
+        
+        while (attempts < MAX_RETRIES) {
+            try {
+                const conn = peer.connect(hostId, {
+                    reliable: true,
+                    metadata: {
+                        type: 'joinRequest',
+                        password: password,
+                        timestamp: Date.now()
+                    }
+                });
+
+                return new Promise((resolve, reject) => {
+                    const timeout = setTimeout(() => {
+                        conn.close();
+                        reject(new Error('Connection timeout'));
+                    }, 10000);
+
+                    conn.on('open', () => {
+                        clearTimeout(timeout);
+                        
+                        conn.on('data', (data: any) => {
+                            if (data.type === 'roomAccess') {
+                                if (data.granted) {
+                                    console.log('Room access granted');
+                                    resolve();
+                                } else {
+                                    reject(new Error('Access denied: Invalid password'));
+                                }
+                            }
+                        });
+                    });
+
+                    conn.on('error', (err) => {
+                        clearTimeout(timeout);
+                        reject(err);
+                    });
+                });
+            } catch (error) {
+                attempts++;
+                if (attempts === MAX_RETRIES) {
+                    throw new Error('Failed to connect after maximum retries');
+                }
+                await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+            }
+        }
+    };
+
+    useEffect(() => {
+        const initializeRoom = async () => {
+            try {
+                // Parse and validate URL parameters
+                const urlParams = new URLSearchParams(window.location.search);
+                const encryptedRoomId = urlParams.get('roomid');
+                const encryptedPassword = urlParams.get('password');
+
+                if (!encryptedRoomId || !encryptedPassword) {
+                    throw new Error('Missing room parameters');
+                }
+
+                // Decrypt room credentials
+                const decryptedRoomId = CryptoJS.AES.decrypt(encryptedRoomId, secretKey).toString(CryptoJS.enc.Utf8);
+                const decryptedPassword = CryptoJS.AES.decrypt(encryptedPassword, secretKey).toString(CryptoJS.enc.Utf8);
+
+                if (!decryptedRoomId || !decryptedPassword) {
+                    throw new Error('Invalid room credentials');
+                }
+
+                // Check if room exists
+                const roomExists = await verifyRoom(decryptedRoomId);
+                
+                if (roomExists) {
+                    // Join existing room
+                    console.log('Room exists, joining as participant');
+                    const participantId = `${decryptedRoomId}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+                    const participantPeer = await setupPeer(participantId);
+                    
+                    await connectToRoom(participantPeer, decryptedRoomId, decryptedPassword);
+                    
+                    peerRef.current = participantPeer;
+                    setRoomId(decryptedRoomId);
+                    setPassword(decryptedPassword);
+                    setIsHost(false);
+                    setJoinedRoom(true);
+                } else {
+                    // Create new room
+                    console.log('Room does not exist, creating as host');
+                    const hostPeer = await setupPeer(decryptedRoomId);
+                    
+                    // Set up host connection handling
+                    hostPeer.on('connection', (conn) => {
+                        console.log('New connection request from:', conn.peer);
+                        
+                        conn.on('open', () => {
+                            const peerPassword = conn.metadata?.password;
+                            
+                            if (peerPassword === decryptedPassword) {
+                                console.log('Password verified, granting access');
+                                conn.send({ type: 'roomAccess', granted: true });
+                            } else {
+                                console.log('Invalid password, denying access');
+                                conn.send({ type: 'roomAccess', granted: false });
+                                conn.close();
+                            }
+                        });
+                    });
+
+                    peerRef.current = hostPeer;
+                    setRoomId(decryptedRoomId);
+                    setPassword(decryptedPassword);
+                    setIsHost(true);
+                    setJoinedRoom(true);
+                }
+
+            } catch (error) {
+                console.error('Room initialization error:', error);
+                setError(error instanceof Error ? error.message : 'Failed to initialize room');
+            }
+        };
+
+        initializeRoom();
+
+        return () => {
+            if (peerRef.current) {
+                peerRef.current.destroy();
+            }
+        };
+    }, []);
+
+    useEffect(() => {
+        if (error) {
+            const timer = setTimeout(() => {
+                navigate('/');
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [error, navigate]);
+
+    if (error) {
+        return (
+            <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+                <div className="bg-red-600 text-white p-4 rounded-md shadow-lg">
+                    <p>{error}</p>
+                    <p className="text-sm mt-2">Redirecting to home in 3 seconds...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!joinedRoom) {
+        return (
+            <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+                <div className="bg-gray-800 text-white p-4 rounded-md shadow-lg">
+                    <p>Connecting to meeting...</p>
+                </div>
+            </div>
+        );
     }
 
     return (
-        <div className="min-h-screen bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md mx-auto">
-                <div className="bg-gray-800 rounded-lg shadow-md p-6">
-                    <div className="text-center mb-6">
-                        <h2 className="text-2xl font-bold text-white">
-                            Video Conference
-                        </h2>
-                        <p className="mt-2 text-sm text-gray-300">
-                            Create a new room or join an existing one
-                        </p>
-                    </div>
-
-                    {error && (
-                        <div className="mb-4 p-3 bg-red-900 border border-red-700 rounded-md flex items-center text-red-200">
-                            <AlertCircle className="mr-2" size={20} />
-                            <span className="text-sm">{error}</span>
-                        </div>
-                    )}
-
-                    <div className="space-y-4">
-                        <div>
-                            <label htmlFor="roomId" className="block text-sm font-medium text-gray-200 mb-1">
-                                Room ID
-                            </label>
-                            <input
-                                id="roomId"
-                                type="text"
-                                value={roomId}
-                                onChange={(e) => {
-                                    setRoomId(e.target.value);
-                                    setError('');
-                                }}
-                                placeholder="Enter room ID (min 4 characters)"
-                                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            />
-                        </div>
-
-                        <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-200 mb-1">
-                                Password
-                                {!isHost && <span className="text-gray-400 text-xs ml-1">(Required only when creating room)</span>}
-                            </label>
-                            <input
-                                id="password"
-                                type="password"
-                                value={password}
-                                onChange={(e) => {
-                                    setPassword(e.target.value);
-                                    setError('');
-                                }}
-                                placeholder="Enter password (min 6 characters)"
-                                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            />
-                        </div>
-
-                        <div className="flex space-x-4 pt-4">
-                            <button
-                                onClick={createRoom}
-                                className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors disabled:opacity-50"
-                                disabled={!roomId.trim()}
-                            >
-                                Create Room
-                            </button>
-                            <button
-                                onClick={joinRoom}
-                                className="w-full bg-gray-700 text-blue-400 px-4 py-2 rounded-md border border-blue-400 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors disabled:opacity-50"
-                                disabled={!roomId.trim()}
-                            >
-                                Join Room
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <MeetingCall
+            roomId={roomId}
+            password={password}
+            isHost={isHost}
+            peer={peerRef.current}
+        />
     );
 };
 
-export default MeetingCalls;
+export default MeetingCallHandler;

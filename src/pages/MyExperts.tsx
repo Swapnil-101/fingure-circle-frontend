@@ -39,7 +39,6 @@ const MyExperts = () => {
                         'Authorization': `Bearer ${token}`,
                     }
                 });
-                console.log("response.data==>", response.data)
                 setMentors(response.data.mentors);
             } catch (error) {
                 console.error('Error fetching mentors:', error);
