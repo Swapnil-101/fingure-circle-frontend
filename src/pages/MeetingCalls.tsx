@@ -26,11 +26,11 @@ const MeetingCallHandler = () => {
     // Function to handle peer connection errors and reconnection
     const handlePeerError = async (peer: Peer, error: Error) => {
         console.error('Peer connection error:', error);
-        
+
         if (connectionAttempts.current < MAX_RECONNECTION_ATTEMPTS) {
             connectionAttempts.current += 1;
             console.log(`Attempting reconnection ${connectionAttempts.current}/${MAX_RECONNECTION_ATTEMPTS}`);
-            
+
             try {
                 await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
                 peer.reconnect();
@@ -91,7 +91,7 @@ const MeetingCallHandler = () => {
         try {
             const tempPeerId = `temp-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
             const tempPeer = await setupPeer(tempPeerId);
-            
+
             return new Promise((resolve) => {
                 const conn = tempPeer.connect(roomId, {
                     reliable: true,
@@ -123,7 +123,7 @@ const MeetingCallHandler = () => {
     // Function to handle room connection
     const connectToRoom = async (peer: Peer, hostId: string, password: string): Promise<void> => {
         let attempts = 0;
-        
+
         while (attempts < MAX_RETRIES) {
             try {
                 const conn = peer.connect(hostId, {
@@ -143,7 +143,7 @@ const MeetingCallHandler = () => {
 
                     conn.on('open', () => {
                         clearTimeout(timeout);
-                        
+
                         conn.on('data', (data: any) => {
                             if (data.type === 'roomAccess') {
                                 if (data.granted) {
@@ -178,30 +178,46 @@ const MeetingCallHandler = () => {
                 const urlParams = new URLSearchParams(window.location.search);
                 const encryptedRoomId = urlParams.get('roomid');
                 const encryptedPassword = urlParams.get('password');
+                const encryptedStartDate = urlParams.get('start');
+                const encryptedEndDate = urlParams.get('end');
 
-                if (!encryptedRoomId || !encryptedPassword) {
+                if (!encryptedRoomId || !encryptedPassword || !encryptedStartDate || !encryptedEndDate) {
                     throw new Error('Missing room parameters');
                 }
 
                 // Decrypt room credentials
                 const decryptedRoomId = CryptoJS.AES.decrypt(encryptedRoomId, secretKey).toString(CryptoJS.enc.Utf8);
                 const decryptedPassword = CryptoJS.AES.decrypt(encryptedPassword, secretKey).toString(CryptoJS.enc.Utf8);
+                const decryptedStartDate = CryptoJS.AES.decrypt(encryptedStartDate, secretKey).toString(CryptoJS.enc.Utf8);
+                const decryptedEndDate = CryptoJS.AES.decrypt(encryptedEndDate, secretKey).toString(CryptoJS.enc.Utf8);
 
-                if (!decryptedRoomId || !decryptedPassword) {
-                    throw new Error('Invalid room credentials');
+                if (!decryptedRoomId || !decryptedPassword || !decryptedStartDate || !decryptedEndDate) {
+                    throw new Error('Invalid room credentials or parameters');
+                }
+
+                // Parse the decrypted start date
+                const startDate = new Date(decryptedStartDate);
+                const currentDate = new Date();
+
+                // Check if the meeting date matches the system date
+                if (
+                    startDate.toDateString() !== currentDate.toDateString() ||
+                    startDate.getTime() - currentDate.getTime() > 10 * 60 * 1000
+                ) {
+                    throw new Error('Meeting is not yet available. Please check the start date and time.');
                 }
 
                 // Check if room exists
                 const roomExists = await verifyRoom(decryptedRoomId);
-                
+
                 if (roomExists) {
                     // Join existing room
                     console.log('Room exists, joining as participant');
                     const participantId = `${decryptedRoomId}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
                     const participantPeer = await setupPeer(participantId);
-                    
+
                     await connectToRoom(participantPeer, decryptedRoomId, decryptedPassword);
-                    
+
                     peerRef.current = participantPeer;
                     setRoomId(decryptedRoomId);
                     setPassword(decryptedPassword);
@@ -211,14 +227,14 @@ const MeetingCallHandler = () => {
                     // Create new room
                     console.log('Room does not exist, creating as host');
                     const hostPeer = await setupPeer(decryptedRoomId);
-                    
+
                     // Set up host connection handling
                     hostPeer.on('connection', (conn) => {
                         console.log('New connection request from:', conn.peer);
-                        
+
                         conn.on('open', () => {
                             const peerPassword = conn.metadata?.password;
-                            
+
                             if (peerPassword === decryptedPassword) {
                                 console.log('Password verified, granting access');
                                 conn.send({ type: 'roomAccess', granted: true });
@@ -236,7 +252,6 @@ const MeetingCallHandler = () => {
                     setIsHost(true);
                     setJoinedRoom(true);
                 }
-
             } catch (error) {
                 console.error('Room initialization error:', error);
                 setError(error instanceof Error ? error.message : 'Failed to initialize room');
@@ -256,7 +271,7 @@ const MeetingCallHandler = () => {
         if (error) {
             const timer = setTimeout(() => {
                 navigate('/');
-            }, 3000);
+            }, 10000);
             return () => clearTimeout(timer);
         }
     }, [error, navigate]);
@@ -266,7 +281,7 @@ const MeetingCallHandler = () => {
             <div className="min-h-screen bg-gray-900 flex items-center justify-center">
                 <div className="bg-red-600 text-white p-4 rounded-md shadow-lg">
                     <p>{error}</p>
-                    <p className="text-sm mt-2">Redirecting to home in 3 seconds...</p>
+                    <p className="text-sm mt-2">Redirecting to home in 10 seconds...</p>
                 </div>
             </div>
         );

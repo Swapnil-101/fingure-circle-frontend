@@ -1,5 +1,6 @@
 import Calendar from '@/components/contact/Celender';
 import { ChatBox } from '@/components/contact/ChatBox';
+import SchedulesCard from '@/components/SchudleMeeting.tsx/SchedulesCard';
 import React from 'react';
 
 //@ts-ignore
@@ -17,7 +18,7 @@ const Contact: React.FC = () => {
         setSelectedMentorId(mentorId);
     };
 
-  
+
 
 
     // const handleSend = (message: string) => {
@@ -31,19 +32,24 @@ const Contact: React.FC = () => {
     // };
 
     return (
-        <div className='md:flex justify-between'>
-            <div className='w-[50%] mt-[66px] mx-[2rem]'>
-                <ChatBox
+        <div className=''>
+            {/* <div className='w-[50%] mt-[66px] mx-[2rem]'> */}
+            {/* <ChatBox
                     onSelectMentor={handleSelectMentor}
                     userAvatarSrc="https://picsum.photos/50/50"
                     userId={1}  // Replace this with the appropriate user ID
                     // onSend={handleSend}
                     selectedMentorIds={selectedMentorId}
-                />
-                {/* <Chat /> */}
-            </div>
-            <div className='w-[50%]'>
-                <Calendar />
+                /> */}
+            {/* <Chat /> */}
+            {/* </div> */}
+            <div className='w-[100%] flex'>
+                <div className='w-[50%]'> 
+                    <Calendar />
+                </div>
+                <div className='w-[50%]'> 
+                    <SchedulesCard />
+                </div>
             </div>
         </div>
     );
