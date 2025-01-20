@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import baseURL from "@/config/config";
 
@@ -6,17 +6,24 @@ const SchedulesCard = () => {
   const [schedules, setSchedules] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [userId, setuserId] = useState("4");
+  const [userId, setuserId] = useState("");
+  const [mentorId, setMentorId] = useState<any>({});
+
 
 
   useEffect(() => {
+    const userData2 = localStorage.getItem("degree");
+    const parsedUserData2 = JSON.parse(userData2 || '{}');
+    setuserId(parsedUserData2.user_id);
+
     const fetchSchedules = async () => {
       try {
         setLoading(true);
         const response = await axios.get(`${baseURL}/api/schedules`, {
-          params: { user_id: userId },
+          params: { user_id: userId, mentor_id: mentorId?.mentor_id },
         });
         setSchedules(response.data);
+
         setError("");
       } catch (err) {
         setError("Failed to fetch schedules. Please try again.");
@@ -28,7 +35,31 @@ const SchedulesCard = () => {
     if (userId) {
       fetchSchedules();
     }
-  }, []);
+  }, [userId, mentorId]);
+
+
+  useEffect(() => {
+
+    const fetchSchedules = async () => {
+      try {
+        // setLoading(true);
+        const response = await axios.get(`${baseURL}/api/mentor/details`, {
+          params: { user_id: userId },
+        });
+        setMentorId(response.data);
+        localStorage.setItem('mentorData', JSON.stringify(response.data));
+
+      } catch (err) {
+        console.log("Failed to fetch schedules. Please try again.");
+      } finally {
+        // setLoading(false);
+      }
+    };
+
+    if (userId) {
+      fetchSchedules();
+    }
+  }, [userId]);
 
   if (loading) {
     return <div className="text-center text-gray-500">Loading schedules...</div>;

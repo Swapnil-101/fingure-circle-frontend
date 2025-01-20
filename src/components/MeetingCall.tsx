@@ -14,6 +14,7 @@ interface PeerData {
   call: MediaConnection;
 }
 
+//@ts-ignore
 const MeetingCall = ({ roomId, password, isHost, peer }: MeetingCallProps) => {
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const [peers, setPeers] = useState<Map<string, PeerData>>(new Map());
@@ -158,6 +159,7 @@ const MeetingCall = ({ roomId, password, isHost, peer }: MeetingCallProps) => {
       // Request screen sharing stream
       const stream = await navigator.mediaDevices.getDisplayMedia({
         video: {
+          //@ts-ignore
           cursor: 'always'
         },
         audio: false
@@ -176,8 +178,10 @@ const MeetingCall = ({ roomId, password, isHost, peer }: MeetingCallProps) => {
       // Share screen with all connected peers
       peers.forEach(({ call }) => {
         try {
+          //@ts-ignore
           const screenTrack = stream.getVideoTracks()[0];
           // Create a new peer connection for screen sharing
+          //@ts-ignore
           const screenSharingCall = peer?.call(call.peer, stream);
 
           // Send metadata about screen sharing

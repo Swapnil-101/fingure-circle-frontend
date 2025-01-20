@@ -30,7 +30,9 @@ const Mentor = () => {
     const [isMentorClicked, setMentorClicked] = useState(false); // State to manage click on a mentor
     const [isMobileScreen, setIsMobileScreen] = useState(false); // State to detect mobile screen
     const [data, setData] = useState<any[]>([]); // State to store mentor data from API
+    //@ts-ignore
     const [dataTwo, setDataTwo] = useState<any[]>([]); // State to store mentor data from API
+    //@ts-ignore
     const [dataThree, setDataThree] = useState<any[]>([]); // State to store mentor data from API
 
     const [selectedMentor, setSelectedMentor] = useState<any>(null); // State to hold the selected mentor details

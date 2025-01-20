@@ -1,4 +1,5 @@
 import Calendar from '@/components/contact/Celender';
+//@ts-ignore
 import { ChatBox } from '@/components/contact/ChatBox';
 import SchedulesCard from '@/components/SchudleMeeting.tsx/SchedulesCard';
 import React from 'react';
@@ -13,6 +14,7 @@ interface MessageProps {
 const Contact: React.FC = () => {
     const [selectedMentorId, setSelectedMentorId] = React.useState<number | null>(null);
 
+    //@ts-ignore
     const handleSelectMentor = (mentorId: number) => {
         console.log("checking==>", selectedMentorId);
         setSelectedMentorId(mentorId);

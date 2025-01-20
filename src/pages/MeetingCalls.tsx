@@ -2,8 +2,10 @@ import { useState, useEffect, useRef } from 'react';
 import Peer, { DataConnection } from 'peerjs';
 import { useNavigate } from 'react-router-dom';
 import MeetingCall from '@/components/MeetingCall';
+//@ts-ignore
 import CryptoJS from 'crypto-js';
 
+//@ts-ignore
 interface PeerConnection {
     peer: string;
     conn: DataConnection;

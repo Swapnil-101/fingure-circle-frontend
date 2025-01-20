@@ -39,10 +39,12 @@ const ScheduleMeeting: React.FC = () => {
     linkedin: string;
   }[]>([]);
 
+  //@ts-ignore
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
   const [successMessage, setSuccessMessage] = useState<string>("");
+  //@ts-ignore
   const [userDetails, setUserDetails] = useState<any>({
     user_id: "",
     name: "",

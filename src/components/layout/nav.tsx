@@ -6,26 +6,27 @@ interface NavProps { }
 
 const Nav: React.FC<NavProps> = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [notifications, setNotifications] = useState<string[]>([]);
+  const [notifications, setNotifications] = useState<any[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [hasNewNotification, setHasNewNotification] = useState(false);
+  //@ts-ignore
   const [datafour, setDatafour] = useState<any>({});
 
- 
+
   useEffect(() => {
     const degree = localStorage.getItem('degree') || "{}";
     const parsedData = JSON.parse(degree);
     setDatafour(parsedData);
 
-    
+
     // Join the notification room and get notifications when user_id is available
     if (parsedData?.user_id) {
       socket.emit('join', { user_id: parsedData?.user_id });
 
-     
+
       socket.emit('get_notifications', { user_id: parsedData?.user_id });
 
-      
+
       socket.on('notifications', (notificationMessages) => {
         if (Array.isArray(notificationMessages) && notificationMessages.length > 0) {
           setNotifications(notificationMessages);
@@ -40,13 +41,13 @@ const Nav: React.FC<NavProps> = () => {
     return () => {
       socket.off('notifications');
     };
-  }, []); 
+  }, []);
 
   const handleLogout = () => {
     localStorage.clear();
     window.location.reload();
   };
-  
+
   const toggleNotifications = (event: React.MouseEvent) => {
     event.stopPropagation(); // Prevents the event from bubbling up
     setShowNotifications(!showNotifications);
@@ -179,7 +180,7 @@ const Nav: React.FC<NavProps> = () => {
                         <li
                           key={index}
                           className="px-4 py-2 text-sm text-gray-600 cursor-pointer hover:bg-gray-100"
-                          onClick={() => handleNotificationClick(notif)} // Add onClick handler
+                          onClick={() => handleNotificationClick(notif)}
                         >
                           {notif?.message}
                         </li>

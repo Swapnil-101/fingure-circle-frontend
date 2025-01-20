@@ -1,5 +1,5 @@
 import BecomeFormV2 from '@/components/becomementor/BecomeFormV2'
-import BecomeForm from '@/components/becomementor/BecomeFrom'
+// import BecomeForm from '@/components/becomementor/BecomeFrom'
 // import React from 'react'
 
 const BecomeMentor = () => {
