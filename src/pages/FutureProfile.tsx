@@ -5,6 +5,7 @@ import baseURL from '@/config/config';
 // import baseURL from '@/config/config';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import { ToastContainer, toast } from "react-toastify";
 
 const FutureProfile = () => {
     const [infoData, setInfoData] = useState<any>([]);
@@ -13,6 +14,8 @@ const FutureProfile = () => {
     const [threeData, setThreeData] = useState<any>([]);
     const [degree, setDegree] = useState<any>();
 
+    const notifySuccess = (data: any) => toast.success(`Suceessfully Selected: ${data}`)
+    const notifyError = (error: any) => toast.error(`Login failed: ${error}`);
     console.log("maindegree==>", degree)
 
 
@@ -122,7 +125,9 @@ const FutureProfile = () => {
                                 'Authorization': `Bearer ${token}`,
                             },
                         });
+                        notifySuccess(infoData2)
                         console.log(response);
+
                         // setCertifcate(JSON.parse(response.data.ans));
                     }
                 } catch (error: any) {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Card,
     CardHeader,
@@ -24,36 +24,6 @@ import { toast } from "react-toastify";
 import baseURL from '@/config/config';
 
 // Dummy data for degrees and expertise
-const dummyData = {
-    degrees: [
-        'B.Sc. Computer Science',
-        'B.Tech Information Technology',
-        'B.E. Mechanical Engineering',
-        'B.A. Psychology',
-        'B.Com. Accounting',
-        'M.Sc. Data Science',
-        'M.Tech Computer Science',
-        'MBA Business Administration',
-        'M.A. Economics',
-        'M.E. Mechanical Engineering',
-        'Ph.D. Computer Science',
-        'Ph.D. Physics'
-    ],
-    expertise: [
-        'Web Development',
-        'Data Science',
-        'Machine Learning',
-        'Cloud Computing',
-        'DevOps',
-        'Cybersecurity',
-        'UI/UX Design',
-        'Mobile Development',
-        'Blockchain',
-        'Artificial Intelligence',
-        'Software Architecture',
-        'Project Management'
-    ]
-};
 
 // Type for the form data
 interface FormData {
@@ -70,8 +40,24 @@ interface FormData {
     resume: File | null;
 }
 
+
+interface ApiData {
+    primary_expertise_area: string[];
+    highest_degree_achieved: string[];
+}
+
 const BecomeFormV2 = () => {
     const [loading, setLoading] = useState(false);
+    const [apiData, setApiData] = useState<ApiData>({
+        primary_expertise_area: [],
+        highest_degree_achieved: []
+    });
+
+    const [searchExpertise, setSearchExpertise] = useState('');
+    const [searchDegree, setSearchDegree] = useState('');
+
+
+    console.log("apiData", apiData);
 
     const notifySuccess = () => toast.success("Your application has been submitted successfully!");
     const notifyError = (error: any) => toast.error(`Error: ${error}`);
@@ -109,6 +95,44 @@ const BecomeFormV2 = () => {
         const file = e.target.files?.[0] || null;
         setFormData((prev) => ({ ...prev, [field]: file }));
     };
+
+    useEffect(() => {
+        const fetchFormData = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                const response = await axios.post<ApiData>(
+                    'http://127.0.0.1:5000/get_information',
+                    {
+                        primary_expertise_area: "primary_expertise_area",
+                        highest_degree_achieved: "highest_degree_achieved"
+                    },
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                );
+
+                // Remove duplicates
+                const uniqueDegrees = [...new Set(response.data.highest_degree_achieved)];
+                const uniqueExpertise = [...new Set(response.data.primary_expertise_area)];
+
+                setApiData({
+                    highest_degree_achieved: uniqueDegrees,
+                    primary_expertise_area: uniqueExpertise
+                });
+
+            } catch (error) {
+                console.error("Error fetching form data:", error);
+                toast.error("Failed to load form options");
+            }
+        };
+
+        fetchFormData();
+    }, []);
+
+
 
     // Handle select changes
     const handleSelect = (value: string, name: string) => {
@@ -267,18 +291,36 @@ const BecomeFormV2 = () => {
                                 <Label htmlFor="expertise">Primary Expertise Area</Label>
                                 <Select
                                     name="expertise"
-                                    onValueChange={(value) => handleSelect(value, 'expertise')}
+                                    onValueChange={(value) => {
+                                        handleSelect(value, 'expertise');
+                                        setSearchExpertise(''); // Reset search on selection
+                                    }}
                                     value={formData.expertise}
                                 >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select your expertise" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {dummyData.expertise.map((expertise) => (
-                                            <SelectItem key={expertise} value={expertise}>
-                                                {expertise}
-                                            </SelectItem>
-                                        ))}
+                                        <div className="p-2">
+                                            <Input
+                                                placeholder="Search expertise..."
+                                                value={searchExpertise}
+                                                onChange={(e) => setSearchExpertise(e.target.value)}
+                                                autoFocus
+                                                className="mb-2"
+                                            />
+                                        </div>
+                                        <div className="max-h-60 overflow-y-auto">
+                                            {apiData.primary_expertise_area
+                                                .filter(expertise =>
+                                                    expertise.toLowerCase().includes(searchExpertise.toLowerCase())
+                                                )
+                                                .map((expertise) => (
+                                                    <SelectItem key={expertise} value={expertise}>
+                                                        {expertise}
+                                                    </SelectItem>
+                                                ))}
+                                        </div>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -287,18 +329,36 @@ const BecomeFormV2 = () => {
                                 <Label htmlFor="degree">Highest Degree Achieved</Label>
                                 <Select
                                     name="degree"
-                                    onValueChange={(value) => handleSelect(value, 'degree')}
+                                    onValueChange={(value) => {
+                                        handleSelect(value, 'degree');
+                                        setSearchDegree(''); // Reset search on selection
+                                    }}
                                     value={formData.degree}
                                 >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select your degree" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {dummyData.degrees.map((degree) => (
-                                            <SelectItem key={degree} value={degree}>
-                                                {degree}
-                                            </SelectItem>
-                                        ))}
+                                        <div className="p-2">
+                                            <Input
+                                                placeholder="Search degrees..."
+                                                value={searchDegree}
+                                                onChange={(e) => setSearchDegree(e.target.value)}
+                                                autoFocus
+                                                className="mb-2"
+                                            />
+                                        </div>
+                                        <div className="max-h-60 overflow-y-auto">
+                                            {apiData.highest_degree_achieved
+                                                .filter(degree =>
+                                                    degree.toLowerCase().includes(searchDegree.toLowerCase())
+                                                )
+                                                .map((degree) => (
+                                                    <SelectItem key={degree} value={degree}>
+                                                        {degree}
+                                                    </SelectItem>
+                                                ))}
+                                        </div>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -325,7 +385,7 @@ const BecomeFormV2 = () => {
 
                         <div className='grid grid-cols-2 gap-4' >
                             <div className="space-y-2">
-                                <Label htmlFor="fee">Total Mentorship Fee</Label>
+                                <Label htmlFor="fee">Total Mentorship Fee In INR</Label>
                                 <Input
                                     id="fee"
                                     name="fee"
