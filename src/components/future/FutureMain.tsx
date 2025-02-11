@@ -6,15 +6,15 @@ import Recom from "./Recom";
 interface FutureMainProps {
     infoData: any;
     setInfoData2: any;
-    threeData:any;
-    infoGetValue:any;
-    infoData2:any;
-    degree:any
+    threeData: any;
+    infoGetValue: any;
+    infoData2: any;
+    degree: any
 }
 
-export const FutureMain: React.FC<FutureMainProps> = ({ infoData, setInfoData2,threeData,infoGetValue,infoData2,degree }:any) => {
+export const FutureMain: React.FC<FutureMainProps> = ({ infoData, setInfoData2, threeData, infoGetValue, infoData2, degree }: any) => {
     console.log("futuremain", infoData)
-   
+
 
     const [data, setData] = useState<any>();
     const [searchQuery, setSearchQuery] = useState<string>('');
@@ -59,8 +59,8 @@ export const FutureMain: React.FC<FutureMainProps> = ({ infoData, setInfoData2,t
             </div>
 
             <div className="px-4 py-16 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8 lg:py-20">
-            <h1 className="text-2xl font-semibold text-gray-800 capitalize lg:text-3xl dark:text-white mb-[1rem]">
-            Recommendation <br />
+                <h1 className="text-2xl font-semibold text-gray-800 capitalize lg:text-3xl dark:text-white mb-[1rem]">
+                    Recommendation <br />
                     <span className="underline decoration-blue-500">According to your details</span>
                 </h1>
                 <div className="grid gap-8 row-gap-5 lg:grid-cols-3">
@@ -107,9 +107,8 @@ export const FutureMain: React.FC<FutureMainProps> = ({ infoData, setInfoData2,t
                     })}
                 </div>
             </div>
-                
-            <Recom infoGetValue={infoGetValue} infoData2={infoData2} setInfoData2={setInfoData2} infoData={infoData} degree={degree} />
-            
+
+
 
             <div className="px-4 py-16 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8 lg:py-20">
                 <div className="grid gap-8 row-gap-5 lg:grid-cols-3">
@@ -156,6 +155,9 @@ export const FutureMain: React.FC<FutureMainProps> = ({ infoData, setInfoData2,t
                     })}
                 </div>
             </div>
+
+            <Recom infoGetValue={infoGetValue} infoData2={infoData2} setInfoData2={setInfoData2} infoData={infoData} degree={degree} />
+
         </div>
     );
 };

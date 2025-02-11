@@ -1,6 +1,7 @@
 import baseURL from '@/config/config';
 import axios from 'axios';
 import  { useEffect, useState } from 'react';
+import useRedirectIfNotLoggedIn from '@/customHooks/useRedirectIfNotLoggedIn';
 
 interface Mentor {
     id: number;
@@ -15,6 +16,7 @@ const MentorList = () => {
     const [unverified, setUnverified] = useState<Mentor[]>([]);
     const [verified, setverified] = useState<Mentor[]>([]);
 
+    useRedirectIfNotLoggedIn()
 
     useEffect(() => {
         const fetchUnverified = async () => {

@@ -1,5 +1,6 @@
 
 import React from 'react';
+import useRedirectIfNotLoggedIn from '@/customHooks/useRedirectIfNotLoggedIn';
 
 interface FAQItem {
     question: string;
@@ -40,6 +41,8 @@ const faqData: FAQItem[] = [
 ];
 
 const Question: React.FC = () => {
+    useRedirectIfNotLoggedIn()
+
     return (
         <section className="bg-white dark:bg-gray-900">
             <div className='flex justify-center items-center'>

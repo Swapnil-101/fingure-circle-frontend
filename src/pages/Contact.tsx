@@ -3,6 +3,7 @@ import Calendar from '@/components/contact/Celender';
 import { ChatBox } from '@/components/contact/ChatBox';
 import SchedulesCard from '@/components/SchudleMeeting.tsx/SchedulesCard';
 import React from 'react';
+import useRedirectIfNotLoggedIn from '@/customHooks/useRedirectIfNotLoggedIn';
 
 //@ts-ignore
 interface MessageProps {
@@ -13,6 +14,7 @@ interface MessageProps {
 
 const Contact: React.FC = () => {
     const [selectedMentorId, setSelectedMentorId] = React.useState<number | null>(null);
+    useRedirectIfNotLoggedIn()
 
     //@ts-ignore
     const handleSelectMentor = (mentorId: number) => {

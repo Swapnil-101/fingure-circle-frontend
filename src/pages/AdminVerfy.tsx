@@ -2,12 +2,14 @@ import { useState } from 'react';
 import axios from 'axios';
 import baseURL from '@/config/config';
 import { toast } from "react-toastify";
+import useRedirectIfNotLoggedIn from '@/customHooks/useRedirectIfNotLoggedIn';
 
 
 const AdminVerfy = () => {
     const [mentorId, setMentorId] = useState('');
     const [firstName, setFirstName] = useState('');
 
+    useRedirectIfNotLoggedIn()
 
     const notifySuccess = () => toast.success("Added mentor  successfully!");
     const notifyError = (error: any) => toast.error(`Error: ${error}`);

@@ -101,7 +101,7 @@ const BecomeFormV2 = () => {
             try {
                 const token = localStorage.getItem("token");
                 const response = await axios.post<ApiData>(
-                    'http://127.0.0.1:5000/get_information',
+                    `${baseURL}/get_information`,
                     {
                         primary_expertise_area: "primary_expertise_area",
                         highest_degree_achieved: "highest_degree_achieved"

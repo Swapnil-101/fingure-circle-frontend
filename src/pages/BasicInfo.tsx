@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import baseURL from '@/config/config';
 import { useNavigate } from 'react-router-dom';
+import useRedirectIfNotLoggedIn from '@/customHooks/useRedirectIfNotLoggedIn';
 
 interface ApiSuggestions {
     bachelors_degree: string[];
@@ -14,6 +15,7 @@ interface ApiSuggestions {
 const BasicInfo: React.FC = () => {
     const token = localStorage.getItem('token');
     const navigate = useNavigate();
+    useRedirectIfNotLoggedIn();
 
     const [apiSuggestions, setApiSuggestions] = useState<ApiSuggestions>({
         bachelors_degree: [],
@@ -37,12 +39,15 @@ const BasicInfo: React.FC = () => {
     const [suggestions, setSuggestions] = useState<string[]>([]);
     const [activeField, setActiveField] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+    const [infoData, setInfoData] = useState<any>();
+
+    console.log("infoData", loading)
 
     useEffect(() => {
         const fetchSuggestions = async () => {
             try {
                 const response = await axios.post<ApiSuggestions>(
-                    'http://127.0.0.1:5000/get_information',
+                    `${baseURL}/get_information`,
                     {
                         bachelors_degree: "bachelors_degree",
                         masters_degree: "masters_degree",
@@ -65,8 +70,43 @@ const BasicInfo: React.FC = () => {
             }
         };
 
+        const fetchInfoData = async () => {
+            try {
+                const name = localStorage.getItem('token');
+                if (name) {
+                    const response = await axios.get(`${baseURL}/user_details`, {
+                        headers: {
+                            'Authorization': `Bearer ${name}`,
+                        }
+                    });
+                    localStorage.setItem('degree', JSON.stringify(response.data))
+
+                    setInfoData(response.data);
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchInfoData();
         fetchSuggestions();
     }, [token]);
+
+    useEffect(() => {
+        if (infoData) {
+            const activities = infoData.activity ? infoData.activity.replace(/[{}]/g, '').split(',') : ['', '', ''];
+            setUserInfo({
+                first_name: infoData.first_name || '',
+                last_name: infoData.last_name || '',
+                school_name: infoData.school_name || '',
+                bachelors_degree: infoData.bachelors_degree || '',
+                masters_degree: infoData.masters_degree || '',
+                certification: infoData.certification || '',
+                activities: activities,
+                country: infoData.country || '',
+            });
+        }
+    }, [infoData]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>, field: string, index?: number) => {
         const value = e.target.value;
@@ -82,13 +122,13 @@ const BasicInfo: React.FC = () => {
         if (['bachelors_degree', 'masters_degree', 'certification'].includes(field)) {
             const apiField = field === 'certification' ? 'certifications' : field;
             const fieldData = apiSuggestions[apiField as keyof ApiSuggestions] || [];
-            
-            const filtered = value ? 
-                fieldData.filter(item => 
+
+            const filtered = value ?
+                fieldData.filter(item =>
                     item.toLowerCase().includes(value.toLowerCase())
-                ) : 
+                ) :
                 [];
-            
+
             setSuggestions(filtered);
             setActiveField(field);
         } else {
@@ -99,24 +139,30 @@ const BasicInfo: React.FC = () => {
     const handleSuggestionClick = (field: string, suggestion: string) => {
         setUserInfo(prev => ({
             ...prev,
-            [field]: field === 'certification' ? 
-                `${prev[field as keyof typeof userInfo]}${prev[field as keyof typeof userInfo] ? ', ' : ''}${suggestion}` : 
+            [field]: field === 'certification' ?
+                `${prev[field as keyof typeof userInfo]}${prev[field as keyof typeof userInfo] ? ', ' : ''}${suggestion}` :
                 suggestion
         }));
         setActiveField(null);
     };
 
-    const handleSave = async () => {
+    const handleSaveOrUpdate = async () => {
         try {
-            const activities = userInfo.activities.join(', ');
+            // const activities = userInfo.activities.join(', ');
 
             const dataToSend = {
                 ...userInfo,
-                activities,
-                certifications: userInfo.certification // Match API field name
+                activity: userInfo.activities,
+                certifications: userInfo.certification
             };
 
-            await axios.post(`${baseURL}/user_details`, dataToSend, {
+            const method = infoData?.data_filled ? 'PUT' : 'POST';
+            const url = `${baseURL}/user_details`;
+
+            await axios({
+                method,
+                url,
+                data: dataToSend,
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -167,8 +213,6 @@ const BasicInfo: React.FC = () => {
                                 className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
                             />
                         </div>
-
-
                     </div>
                 </div>
             </div>
@@ -195,32 +239,32 @@ const BasicInfo: React.FC = () => {
                     </div>
 
                     <div className="relative">
-    <label className="text-gray-700 dark:text-gray-200" htmlFor="bachelorsDegree">
-        Bachelors Degree
-    </label>
-    <input
-        type="text"
-        id="bachelorsDegree"
-        placeholder="Bachelors Degree"
-        name="bachelorsDegree"
-        value={userInfo.bachelors_degree}
-        onChange={(e) => handleInputChange(e, 'bachelors_degree')}
-        className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
-    />
-    {activeField === 'bachelors_degree' && suggestions.length > 0 && (
-        <ul className="absolute z-10 w-full bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 max-h-48 overflow-y-auto">
-            {suggestions.map((suggestion, index) => (
-                <li
-                    key={index}
-                    onClick={() => handleSuggestionClick('bachelors_degree', suggestion)}
-                    className="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                    {suggestion}
-                </li>
-            ))}
-        </ul>
-    )}
-</div>
+                        <label className="text-gray-700 dark:text-gray-200" htmlFor="bachelorsDegree">
+                            Bachelors Degree
+                        </label>
+                        <input
+                            type="text"
+                            id="bachelorsDegree"
+                            placeholder="Bachelors Degree"
+                            name="bachelorsDegree"
+                            value={userInfo.bachelors_degree}
+                            onChange={(e) => handleInputChange(e, 'bachelors_degree')}
+                            className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
+                        />
+                        {activeField === 'bachelors_degree' && suggestions.length > 0 && (
+                            <ul className="absolute z-10 w-full bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 max-h-48 overflow-y-auto">
+                                {suggestions.map((suggestion, index) => (
+                                    <li
+                                        key={index}
+                                        onClick={() => handleSuggestionClick('bachelors_degree', suggestion)}
+                                        className="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                                    >
+                                        {suggestion}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
 
                     <div className="relative">
                         <label className="text-gray-700 dark:text-gray-200" htmlFor="mastersDegree">
@@ -330,10 +374,10 @@ const BasicInfo: React.FC = () => {
             {/* Save Button */}
             <div className="mt-6 flex justify-end">
                 <button
-                    onClick={handleSave}
+                    onClick={handleSaveOrUpdate}
                     className="px-6 py-3 text-white bg-blue-600 rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 dark:bg-blue-500 dark:hover:bg-blue-400"
                 >
-                    Save
+                    {infoData?.data_filled ? 'Update' : 'Save'}
                 </button>
             </div>
         </section>

@@ -53,6 +53,11 @@ const ProtectedRoutes = (user: any) => {
             path: '/contact-expert',
             component: <Contact />,
         },
+
+        {
+            path: '/dashboard',
+            component: <Contact />,
+        },
         {
             path: '/feedback',
             component: <FeedBack />,

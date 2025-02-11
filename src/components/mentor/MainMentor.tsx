@@ -2,8 +2,11 @@
 import MentorDetail from './MentorDetail'
 import Review from './Review'
 import { Pricing } from './Pricing'
+import useRedirectIfNotLoggedIn from '@/customHooks/useRedirectIfNotLoggedIn';
 
 const MainMentor = () => {
+    useRedirectIfNotLoggedIn()
+
     return (
         <div>
             <MentorDetail />

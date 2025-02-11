@@ -1,8 +1,10 @@
 import  { useState } from 'react';
 import axios from 'axios';
+import useRedirectIfNotLoggedIn from '@/customHooks/useRedirectIfNotLoggedIn';
 
 const RazerPay = () => {
     const [paymentStatus, setPaymentStatus] = useState('');
+    useRedirectIfNotLoggedIn()
 
     const initiatePayment = async () => {
         try {

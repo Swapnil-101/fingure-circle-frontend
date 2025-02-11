@@ -6,13 +6,13 @@ import MentorConatiner from "@/components/home/MentorContainer"
 import baseURL from "@/config/config";
 // import SomeRecentQuestion from "@/components/home/SomeRecentQuestion"
 // import baseURL from "@/config/config";
-// import useRedirectIfNotLoggedIn from '@/customHooks/useRedirectIfNotLoggedIn';
+import useRedirectIfNotLoggedIn from '@/customHooks/useRedirectIfNotLoggedIn';
 import axios from "axios";
 // import axios from "axios";
 import { useEffect, useState } from "react";
 const Home = () => {
   //basic info page check hook
-  // useRedirectIfNotLoggedIn();
+  useRedirectIfNotLoggedIn();
   const [infoData, setInfoData] = useState<any>();
 
   useEffect(() => {

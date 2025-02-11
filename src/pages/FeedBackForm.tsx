@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import useRedirectIfNotLoggedIn from '@/customHooks/useRedirectIfNotLoggedIn';
 
 const FeedBackForm: React.FC = () => {
   const [memberName, setMemberName] = useState('');
@@ -14,6 +15,8 @@ const FeedBackForm: React.FC = () => {
   const handleConfirm = () => {
     setConfirm(true);
   };
+  useRedirectIfNotLoggedIn()
+
 
   const handleSubmit = () => {
     const formData = {

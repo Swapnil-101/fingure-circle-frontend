@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-// import useRedirectIfNotLoggedIn from '@/customHooks/useRedirectIfNotLoggedIn';
+import useRedirectIfNotLoggedIn from '@/customHooks/useRedirectIfNotLoggedIn';
 import axios from 'axios';
 import baseURL from '@/config/config';
 import StaticFrom from '@/components/strip/StaticFrom';
@@ -26,7 +26,7 @@ const SchoolDetail: React.FC<SchoolDetailProps> = ({ label, value }) => (
 );
 
 const Mentor = () => {
-    // useRedirectIfNotLoggedIn(); // Custom hook to redirect if not logged in
+    useRedirectIfNotLoggedIn(); // Custom hook to redirect if not logged in
     const [isMentorClicked, setMentorClicked] = useState(false); // State to manage click on a mentor
     const [isMobileScreen, setIsMobileScreen] = useState(false); // State to detect mobile screen
     const [data, setData] = useState<any[]>([]); // State to store mentor data from API

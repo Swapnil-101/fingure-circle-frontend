@@ -1,10 +1,11 @@
 import baseURL from '@/config/config';
 import axios from 'axios';
 import { useEffect, useState } from 'react'
+import useRedirectIfNotLoggedIn from '@/customHooks/useRedirectIfNotLoggedIn';
 
 const MyExperts = () => {
     const [mentors, setMentors] = useState<any[]>([]);
-
+    useRedirectIfNotLoggedIn()
     console.log("mentorchekcin==>", mentors)
     // const projects = [
     //     {

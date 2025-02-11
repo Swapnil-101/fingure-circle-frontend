@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import baseURL from '@/config/config';
+import useRedirectIfNotLoggedIn from '@/customHooks/useRedirectIfNotLoggedIn';
 
 interface Milestone {
   milestone: string;
@@ -13,6 +14,8 @@ const MilestoneForm: React.FC = () => {
   const [milestones, setMilestones] = useState<Milestone[]>([
     { milestone: '', description: '', expectedCompletionDate: '', mentorFees: '' },
   ]);
+  useRedirectIfNotLoggedIn()
+
 
   const handleInputChange = (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
