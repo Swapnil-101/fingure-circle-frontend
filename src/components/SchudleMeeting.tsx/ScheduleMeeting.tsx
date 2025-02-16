@@ -9,7 +9,7 @@ interface Schedule {
   name: string;
   email: string;
   start_date: string;
-  end_date: string;
+  duration: string;
   mentor_id: string;
   user_id: string;
   mentor_email?: string;
@@ -23,7 +23,7 @@ const ScheduleMeeting: React.FC = () => {
     name: "",
     email: "",
     start_date: "",
-    end_date: "",
+    duration: "30",
     mentor_id: "",
     user_id: "",
     mentor_email: "",
@@ -39,19 +39,28 @@ const ScheduleMeeting: React.FC = () => {
     linkedin: string;
   }[]>([]);
 
-  //@ts-ignore
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
   const [successMessage, setSuccessMessage] = useState<string>("");
-  //@ts-ignore
   const [userDetails, setUserDetails] = useState<any>({
     user_id: "",
     name: "",
     email: ""
   });
 
-  // Fetch mentors from the backend
+  const durationOptions = [
+    { value: "30", label: "30 Minutes" },
+    { value: "60", label: "1 Hour" }
+  ];
+
+  // Calculate end date based on start date and duration
+  const calculateEndDate = (startDate: string, durationMinutes: string): string => {
+    const date = new Date(startDate);
+    date.setMinutes(date.getMinutes() + parseInt(durationMinutes));
+    return date.toISOString().slice(0, 16); // Format to match datetime-local input
+  };
+
   useEffect(() => {
     const fetchMentors = async () => {
       try {
@@ -70,7 +79,6 @@ const ScheduleMeeting: React.FC = () => {
     fetchMentors();
   }, []);
 
-  // Handle input changes
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -78,7 +86,6 @@ const ScheduleMeeting: React.FC = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  // Handle mentor selection
   const handleMentorSelection = (mentorId: string) => {
     const selectedMentor = mentorsList.find(
       (mentor) => mentor.mentor_id.toString() === mentorId
@@ -94,20 +101,13 @@ const ScheduleMeeting: React.FC = () => {
     }
   };
 
-
-
   useEffect(() => {
     const userData = localStorage.getItem("degree");
-
     if (userData) {
       const parsedUserData = JSON.parse(userData);
       setUserDetails({ user_id: parsedUserData.id });
-      console.log("Parsed user data ===>", parsedUserData);
-    } else {
-      console.log("No user data found.");
     }
-  }, [])
-
+  }, []);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -123,21 +123,20 @@ const ScheduleMeeting: React.FC = () => {
         const parsedUserData = JSON.parse(userData);
         const parsedUserData2 = JSON.parse(userData2);
 
-        console.log("Parsed user data ===>", parsedUserData2);
-
-
         const randomId = Math.floor(Math.random() * 1000);
         const roomid = Math.floor(Math.random() * 1000);
         const password = Math.random().toString(36).substring(2, 8);
 
-
         const secretKey = "meetingkeys";
+        const startDate = formData.start_date;
+        const endDate = calculateEndDate(startDate, formData.duration);
+
         const encryptedStartDate = CryptoJS.AES.encrypt(
-          formData.start_date,
+          startDate,
           secretKey
         ).toString();
         const encryptedEndDate = CryptoJS.AES.encrypt(
-          formData.end_date,
+          endDate,
           secretKey
         ).toString();
         const encryptedRoomId = CryptoJS.AES.encrypt(
@@ -146,22 +145,18 @@ const ScheduleMeeting: React.FC = () => {
         ).toString();
         const encryptedPassword = CryptoJS.AES.encrypt(password, secretKey).toString();
 
-        console.log("Encrypted Params:", { encryptedPassword, encryptedRoomId, encryptedStartDate, encryptedEndDate });
-        // Prepare the meeting link
         const meetingLink = `/v2/meetingcall/${randomId}?start=${encodeURIComponent(
           encryptedStartDate
         )}&end=${encodeURIComponent(encryptedEndDate)}&roomid=${encodeURIComponent(
           encryptedRoomId
         )}&password=${encodeURIComponent(encryptedPassword)}`;
 
-        console.log("Meeting Link:", meetingLink);
-
-        // Prepare the data to be sent to the backend
         const scheduleData = {
           name: parsedUserData2.first_name || "",
           email: parsedUserData.username || "",
-          start_datetime: formData.start_date,
-          end_datetime: formData.end_date,
+          start_datetime: startDate,
+          end_datetime: endDate,
+          duration: formData.duration,
           link: meetingLink,
           user_id: parsedUserData2.user_id,
           mentor_id: formData.mentor_id,
@@ -189,7 +184,7 @@ const ScheduleMeeting: React.FC = () => {
           name: "",
           email: "",
           start_date: "",
-          end_date: "",
+          duration: "30",
           mentor_id: "",
           user_id: "",
           mentor_email: "",
@@ -197,7 +192,6 @@ const ScheduleMeeting: React.FC = () => {
           mentor_linkedin: "",
         });
       } else {
-        console.log("No user data found.");
         setError("User data not found in localStorage.");
       }
     } catch (err: any) {
@@ -206,8 +200,6 @@ const ScheduleMeeting: React.FC = () => {
       setLoading(false);
     }
   };
-
-
 
   return (
     <div className="max-w-4xl mx-auto p-4">
@@ -267,17 +259,23 @@ const ScheduleMeeting: React.FC = () => {
             />
           </label>
         </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            End Date:
-            <input
-              type="datetime-local"
-              name="end_date"
-              value={formData.end_date}
+            Duration:
+            <select
+              name="duration"
+              value={formData.duration}
               onChange={handleInputChange}
               required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-            />
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              {durationOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
           </label>
         </div>
 
