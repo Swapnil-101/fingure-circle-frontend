@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import baseURL from "@/config/config";
 
-const SchedulesCard = () => {
+//@ts-ignore
+const SchedulesCard = ({ count, setCount }) => {
   const [schedules, setSchedules] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -59,7 +60,7 @@ const SchedulesCard = () => {
     if (userId) {
       fetchSchedules();
     }
-  }, [userId]);
+  }, [userId, count]);
 
   if (loading) {
     return <div className="text-center text-gray-500">Loading schedules...</div>;

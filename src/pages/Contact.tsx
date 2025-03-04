@@ -15,6 +15,8 @@ interface MessageProps {
 const Contact: React.FC = () => {
     const [selectedMentorId, setSelectedMentorId] = React.useState<number | null>(null);
     const [activeTab, setActiveTab] = useState<'mentor' | 'followers'>('mentor');
+
+    const [count, setCount] = useState<any>(0);
     useRedirectIfNotLoggedIn()
 
     //@ts-ignore
@@ -66,10 +68,10 @@ const Contact: React.FC = () => {
             {activeTab === 'mentor' ? (
                 <div className='w-[100%] flex'>
                     <div className='w-[50%]'>
-                        <Calendar />
+                        <Calendar count={count} setCount={setCount} />
                     </div>
                     <div className='w-[50%]'>
-                        <SchedulesCard />
+                        <SchedulesCard count={count} setCount={setCount} />
                     </div>
                 </div>
             ) : (

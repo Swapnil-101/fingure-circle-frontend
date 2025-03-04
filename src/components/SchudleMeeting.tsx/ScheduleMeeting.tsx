@@ -17,7 +17,8 @@ interface Schedule {
   mentor_linkedin?: string;
 }
 
-const ScheduleMeeting: React.FC = () => {
+//@ts-ignore
+const ScheduleMeeting: React.FC = ({ setCount, count }) => {
   const [formData, setFormData] = useState<Schedule>({
     id: 0,
     name: "",
@@ -110,6 +111,7 @@ const ScheduleMeeting: React.FC = () => {
   }, []);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    setCount(count + 1);
     e.preventDefault();
     setLoading(true);
     setError("");

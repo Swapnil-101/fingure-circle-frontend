@@ -13,6 +13,7 @@ const FutureProfile = () => {
     const [degree, setDegree] = useState<any>();
     const [isLoading, setIsLoading] = useState<boolean>(true); // New state for loading
 
+    const [count, setCount] = useState<any>(0);
     useRedirectIfNotLoggedIn();
 
     const notifySuccess = (data: any) => toast.success(`Successfully Selected: ${data}`);
@@ -45,7 +46,7 @@ const FutureProfile = () => {
         };
 
         fetchInfoData();
-    }, []);
+    }, [count]);
 
     useEffect(() => {
         if (degree) {
@@ -71,7 +72,7 @@ const FutureProfile = () => {
             };
             fetchInfoData();
         }
-    }, [degree]);
+    }, [degree,count]);
 
     useEffect(() => {
         const fetchInfoData = async () => {
@@ -93,7 +94,7 @@ const FutureProfile = () => {
         };
 
         fetchInfoData();
-    }, []);
+    }, [count]);
 
     useEffect(() => {
         if (infoData2) {
@@ -108,6 +109,8 @@ const FutureProfile = () => {
                                 'Authorization': `Bearer ${token}`,
                             },
                         });
+
+                        setCount(count + 1);
                         notifySuccess(infoData2);
                         console.log(response);
                     }
@@ -144,7 +147,7 @@ const FutureProfile = () => {
 
     return (
         <div>
-            <FutureMain infoGetValue={infoGetValue} degree={degree} infoData2={infoData2} setInfoData2={setInfoData2} infoData={infoData} threeData={threeData} />
+            <FutureMain  infoGetValue={infoGetValue} degree={degree} infoData2={infoData2} setInfoData2={setInfoData2} infoData={infoData} threeData={threeData} />
             <ToastContainer />
         </div>
     );
