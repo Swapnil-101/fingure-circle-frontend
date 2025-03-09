@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import useRedirectIfNotLoggedIn from '@/customHooks/useRedirectIfNotLoggedIn';
+import baseURL from '@/config/config';
+import axios from 'axios';
 
 const FeedBackForm: React.FC = () => {
-  const [memberName, setMemberName] = useState('');
-  const [userName, setUserName] = useState('');
+  // const [memberName, setMemberName] = useState('');
+  // const [userName, setUserName] = useState('');
   const [milestone, setMilestone] = useState('');
   const [milestoneAchieved, setMilestoneAchieved] = useState<'yes' | 'no' | ''>('');
   const [nextStepsIdentified, setNextStepsIdentified] = useState<'yes' | 'no' | ''>('');
@@ -18,19 +20,36 @@ const FeedBackForm: React.FC = () => {
   useRedirectIfNotLoggedIn()
 
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('Token not found!');
+      return;
+    }
+
     const formData = {
-      memberName,
-      userName,
+      user_id: 1,
+      mentor_id: 2,
       milestone,
-      milestoneAchieved,
-      nextStepsIdentified,
-      progressRating,
-      mentorResponsibility,
-      userResponsibility,
+      milestone_achieved: milestoneAchieved.toLowerCase() === 'yes',
+      next_steps_identified: nextStepsIdentified.toLowerCase() === 'yes',
+      progress_rating:progressRating,
+      mentor_responsibility: mentorResponsibility.toLowerCase() === 'yes',
+      user_responsibility: userResponsibility.toLowerCase() === 'yes',
     };
-    console.log('Submitted:', formData);
-  };
+
+    const response = await axios.post(`${baseURL}/feedback`, formData, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    console.log(response.data);
+  } catch (err) {
+    console.error('Error submitting feedback:', err);
+  }
+};
+
+
 
   const handleMakeChanges = () => {
     setConfirm(false);
@@ -42,7 +61,7 @@ const FeedBackForm: React.FC = () => {
 
       <div className="mb-6">
         <h3 className="text-xl font-semibold mb-4">Meeting Details</h3>
-        <div className="mb-4">
+        {/* <div className="mb-4">
           <label className="block font-medium mb-2">Member Name:</label>
           <input
             type="text"
@@ -61,7 +80,7 @@ const FeedBackForm: React.FC = () => {
             className="w-full px-3 py-2 border border-gray-300 rounded-lg"
             placeholder="Enter user name"
           />
-        </div>
+        </div> */}
         <div className="mb-4">
           <label className="block font-medium mb-2">Milestone:</label>
           <input

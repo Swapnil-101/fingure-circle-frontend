@@ -1,5 +1,5 @@
 import React from 'react';
-import RatingStars from './RatingStars';
+// import RatingStars from './RatingStars';
 
 const FeedbackForm: React.FC = () => {
     return (
@@ -31,11 +31,9 @@ const FeedbackForm: React.FC = () => {
                     </div>
                     <div>
                         <label htmlFor="first-name" className="block text-sm font-semibold leading-6 text-gray-900">
-                            Expert Rating
+                            Expert Ratingss
                         </label>
-                        <div className="mt-2.5">
-                            <RatingStars />
-                        </div>
+                       
 
                     </div>
                     <div>

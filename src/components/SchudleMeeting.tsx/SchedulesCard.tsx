@@ -36,7 +36,7 @@ const SchedulesCard = ({ count, setCount }) => {
     if (userId) {
       fetchSchedules();
     }
-  }, [userId, mentorId]);
+  }, [userId, mentorId,count]);
 
 
   useEffect(() => {
@@ -84,7 +84,7 @@ const SchedulesCard = ({ count, setCount }) => {
               <strong>Start:</strong> {new Date(schedule.start_datetime).toLocaleString()}
             </p>
             <p className="text-sm">
-              <strong>End:</strong> {new Date(schedule.end_datetime).toLocaleString()}
+              <strong>End:</strong> {schedule.duration}
             </p>
           </div>
           {schedule.link && (

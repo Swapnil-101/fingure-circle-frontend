@@ -16,6 +16,11 @@ const MilestoneForm: React.FC = () => {
   ]);
   useRedirectIfNotLoggedIn()
 
+  const [userId, setuserId] = useState();
+  const [userIdsec, setuserIdsec] = useState();
+
+
+
 
   const handleInputChange = (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -39,6 +44,15 @@ const MilestoneForm: React.FC = () => {
     // Get token from localStorage
     const token = localStorage.getItem('token');
 
+    const userData2 = localStorage.getItem("mentorData");
+    const parsedUserData2 = JSON.parse(userData2 || '{}');
+    const userData3 = localStorage.getItem("degree");
+    const parsedUserData3 = JSON.parse(userData3 || '{}');
+    
+    setuserId(parsedUserData2);
+    setuserIdsec(parsedUserData3);
+
+
     // Make sure token exists before proceeding
     if (!token) {
       console.error('Token not found!');
@@ -46,9 +60,9 @@ const MilestoneForm: React.FC = () => {
     }
 
     const data = {
-      user_id: 1, // Replace with dynamic user ID if needed
-      mentor_id: 1, // Replace with dynamic mentor ID if needed
-      milestone: milestones, // The milestone data you want to send
+      user_id: userIdsec?.user_id,
+      mentor_id: userId?.mentor_id,
+      milestone: milestones,
     };
 
     try {

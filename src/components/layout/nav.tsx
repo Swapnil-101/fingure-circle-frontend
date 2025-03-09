@@ -204,7 +204,7 @@ const Nav: React.FC<NavProps> = () => {
                 className="flex items-center focus:outline-none"
                 aria-label="toggle profile dropdown"
               >
-                <div className="w-8 h-8 overflow-hidden border-2 border-gray-400 rounded-full">
+                <div className="w-8 h-8 mx-4 overflow-hidden border-2 border-gray-400 rounded-full">
                   <img
                     src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=200&q=60"
                     alt="Profile"
@@ -212,6 +212,8 @@ const Nav: React.FC<NavProps> = () => {
                   />
                 </div>
               </button>
+
+              <h1>{datafour?.first_name} {datafour?.last_name}</h1>
 
               {/* Logout Button */}
               <button

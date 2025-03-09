@@ -15,7 +15,10 @@ const Home = () => {
   useRedirectIfNotLoggedIn();
   const [infoData, setInfoData] = useState<any>();
 
+
   useEffect(() => {
+
+   
     // Fetch data when the component mounts
     const fetchInfoData = async () => {
       try {
@@ -28,6 +31,8 @@ const Home = () => {
               'Authorization': `Bearer ${name}`,
             }
           });
+
+          console.log("response", response.data)
           setInfoData(response.data);
         }
       } catch (error) {
@@ -38,7 +43,30 @@ const Home = () => {
     fetchInfoData();
   }, []);
 
- 
+  useEffect(() => {
+
+    const fetchSchedules = async () => {
+      try {
+        // setLoading(true);
+        const response = await axios.get(`${baseURL}/api/mentor/details`, {
+          params: { user_id: infoData?.user_id },
+        });
+        // setMentorId(response.data);
+        localStorage.setItem('mentorData', JSON.stringify(response.data));
+
+      } catch (err) {
+        console.log("Failed to fetch schedules. Please try again.");
+      } finally {
+        // setLoading(false);
+      }
+    };
+
+    if (infoData) {
+      fetchSchedules();
+    }
+  }, [infoData]);
+
+
   return (
     <div className="mx-[1rem] flex flex-col gap-8">
       <div className="flex  justify-between  gap-4 md:gap-[1rem]">

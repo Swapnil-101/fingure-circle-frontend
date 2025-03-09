@@ -2,9 +2,12 @@ import Calendar from '@/components/contact/Celender';
 //@ts-ignore
 import { ChatBox } from '@/components/contact/ChatBox';
 import SchedulesCard from '@/components/SchudleMeeting.tsx/SchedulesCard';
-import React from 'react';
+import React, { useEffect } from 'react';
 import useRedirectIfNotLoggedIn from '@/customHooks/useRedirectIfNotLoggedIn';
 import { useState } from 'react';
+import FeedBackCards from '@/components/feedback/FeedBackCards';
+import axios from 'axios';
+import baseURL from '@/config/config';
 //@ts-ignore
 interface MessageProps {
     avatarSrc: string;
@@ -16,6 +19,7 @@ const Contact: React.FC = () => {
     const [selectedMentorId, setSelectedMentorId] = React.useState<number | null>(null);
     const [activeTab, setActiveTab] = useState<'mentor' | 'followers'>('mentor');
 
+    const [feedback, setFeedback] = useState<any>([]);
     const [count, setCount] = useState<any>(0);
     useRedirectIfNotLoggedIn()
 
@@ -26,17 +30,29 @@ const Contact: React.FC = () => {
     };
 
 
+    useEffect(() => {
+        const fetchUnFeedback = async () => {
+            try {
+                const name = localStorage.getItem('token');
+                if (name) {
+                    const response = await axios.get(`${baseURL}/feedback`, {
+                        params: { user_id: 1 },
+                    });
+                    console.log("checking==>", response.data);
+                    setFeedback(response.data);
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchUnFeedback();
+
+    }, [])
 
 
-    // const handleSend = (message: string) => {
-    //     const newMessage: MessageProps = {
-    //         avatarSrc: 'https://picsum.photos/50/50',
-    //         username: '',
-    //         message,
-    //     };
 
-    //     setMessages([...messages, newMessage]);
-    // };
+
 
     return (
         <div className='p-4'>
@@ -66,14 +82,21 @@ const Contact: React.FC = () => {
             {/* <Chat /> */}
             {/* </div> */}
             {activeTab === 'mentor' ? (
-                <div className='w-[100%] flex'>
-                    <div className='w-[50%]'>
-                        <Calendar count={count} setCount={setCount} />
+                <div>
+                    <div className='w-[100%] h-[40vh] flex overflow-y-scroll'>
+                        <div className='w-[50%]'>
+                            <Calendar count={count} setCount={setCount} />
+                        </div>
+                        <div className='w-[50%]'>
+                            <SchedulesCard count={count} setCount={setCount} />
+                        </div>
                     </div>
-                    <div className='w-[50%]'>
-                        <SchedulesCard count={count} setCount={setCount} />
+
+                    <div>
+                        <FeedBackCards feedback={feedback} />
                     </div>
                 </div>
+
             ) : (
                 <div>
                     {/* Add followers component here */}
