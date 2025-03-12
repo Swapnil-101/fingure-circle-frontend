@@ -29,45 +29,30 @@ const FutureProfile = () => {
         const fetchInfoData = async () => {
             try {
                 const token = localStorage.getItem('token');
-                if (token) {
-                    const response = await axios.get(`https://swapnil-101-course-recommend.hf.space/get_streams`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
+                if (!token) return;
     
-                    console.log("Raw ans field BEFORE parsing:", response.data.ans);
+                const response = await axios.get(
+                    `https://swapnil-101-course-recommend.hf.space/get_streams`,
+                    { headers: { 'Authorization': `Bearer ${token}` } }
+                );
     
-                    let rawData = response.data.ans;
+                console.log("Raw ans field BEFORE parsing:", response.data.ans);
     
-                    // Ensure response is a string
-                    if (typeof rawData !== "string") {
-                        console.error("Unexpected ans format:", rawData);
-                        return;
+                let rawData = response.data.ans;
+    
+                // Ensure the data is a properly formatted JSON string
+                if (typeof rawData === "string") {
+                    try {
+                        let parsedData = JSON.parse(rawData);
+                        console.log("Parsed Data:", parsedData);
+    
+                        // Ensure it's a 1D array
+                        setInfoData(Array.isArray(parsedData) ? parsedData : []);
+                    } catch (jsonError) {
+                        console.error("Error parsing JSON:", jsonError);
                     }
-    
-                    // Fix malformed JSON structure
-                    let cleanedData = rawData
-                        .trim() // Remove extra spaces
-                        .replace(/\n/g, '') // Remove new lines
-                        .replace(/\r/g, '') // Remove carriage returns
-                        .replace(/,\s*\]/g, ']') // Remove trailing commas in arrays
-                        .replace(/,\s*}/g, '}') // Remove trailing commas in objects
-                        .replace(/"([^"]*)$/, (_, match) => `"${match}"`); // Fix missing end quote in strings
-    
-                    // Ensure proper array closure
-                    if (!cleanedData.endsWith(']')) {
-                        cleanedData += '"]'; // Safely close the JSON array
-                    }
-    
-                    // Fix duplicate quotes at the end
-                    cleanedData = cleanedData.replace(/""\]$/, '"]');
-    
-                    console.log("Cleaned JSON String:", cleanedData);
-    
-                    // Parse only after ensuring valid JSON
-                    let parsedData = JSON.parse(cleanedData);
-                    console.log("Parsed Data:", parsedData);
-    
-                    setInfoData(parsedData.flat()); // Ensure it's a 1D array
+                } else {
+                    console.error("Unexpected ans format:", rawData);
                 }
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -78,6 +63,7 @@ const FutureProfile = () => {
     
         fetchInfoData();
     }, []);
+    
     
     
     
