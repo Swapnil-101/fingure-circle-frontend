@@ -46,13 +46,9 @@ const useRedirectIfNotLoggedIn = () => {
     }, []);
 
     // Update state when localStorage is modified in the same tab
-    useEffect(() => {
-        const interval = setInterval(() => {
+    useEffect(() => {       
             updateUserFromStorage();
             updateUserTwoFromStorage();
-        }, 1000); // Check every second
-
-        return () => clearInterval(interval);
     }, []);
 
     // Redirect if data is incomplete

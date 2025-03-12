@@ -139,9 +139,9 @@ const Recom: React.FC<Recom> = ({ degree }) => {
                         </h1>
 
                         <p className="text-gray-500 dark:text-gray-300">
-                            {data.map((i: any) => {
+                            {data.map((i: any, key: any) => {
                                 return (
-                                    <p>{i}</p>
+                                    <p key={key + 1}>{i}</p>
                                 )
                             })}
 
@@ -197,9 +197,9 @@ const Recom: React.FC<Recom> = ({ degree }) => {
                         </h1>
 
                         <p className="text-gray-500 dark:text-gray-300">
-                            {competition.map((i: any) => {
+                            {competition.map((i: any, key: any) => {
                                 return (
-                                    <p>{i}</p>
+                                    <p key={key + 1}>{i}</p>
                                 )
                             })}
 
@@ -255,9 +255,9 @@ const Recom: React.FC<Recom> = ({ degree }) => {
                         </h1>
 
                         <p className="text-gray-500 dark:text-gray-300">
-                            {certifcate.map((i: any) => {
+                            {certifcate.map((i: any,key: any) => {
                                 return (
-                                    <p>{i}</p>
+                                    <p key={key+1}>{i}</p>
                                 )
                             })}
 

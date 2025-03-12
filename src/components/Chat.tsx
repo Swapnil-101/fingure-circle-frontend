@@ -44,6 +44,7 @@ const Chat: React.FC = () => {
                         placeholder="Type your message..."
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
                     />
                     <button
                         className="bg-blue-500 hover:bg-blue-700 text-black font-medium py-2 px-4 rounded-full"

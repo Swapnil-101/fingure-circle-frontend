@@ -8,6 +8,7 @@ import { useState } from 'react';
 import FeedBackCards from '@/components/feedback/FeedBackCards';
 import axios from 'axios';
 import baseURL from '@/config/config';
+import Milestone from '@/components/milestone/MileStone';
 //@ts-ignore
 interface MessageProps {
     avatarSrc: string;
@@ -92,8 +93,13 @@ const Contact: React.FC = () => {
                         </div>
                     </div>
 
-                    <div>
-                        <FeedBackCards feedback={feedback} />
+                    <div className='w-[100%] h-[40vh] flex overflow-y-scroll mt-4 pt-4 border-t'>
+                        <div className='w-[50%]'>
+                            <Milestone feedback={feedback} />
+                        </div>
+                        <div className='w-[50%]'>
+                            <FeedBackCards feedback={feedback} />
+                        </div>
                     </div>
                 </div>
 

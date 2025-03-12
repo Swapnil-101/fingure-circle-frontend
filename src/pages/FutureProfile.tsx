@@ -18,7 +18,7 @@ const FutureProfile = () => {
 
     const notifySuccess = (data: any) => toast.success(`Successfully Selected: ${data}`);
     const notifyError = (error: any) => toast.error(`Login failed: ${error}`);
-    console.log("maindegree==>", notifyError);
+    console.log("maindegree==>", infoData);
 
     useEffect(() => {
         const degree = localStorage.getItem('degree') || "{}";
@@ -28,25 +28,62 @@ const FutureProfile = () => {
     useEffect(() => {
         const fetchInfoData = async () => {
             try {
-                const name = localStorage.getItem('token');
-                if (name) {
+                const token = localStorage.getItem('token');
+                if (token) {
                     const response = await axios.get(`https://swapnil-101-course-recommend.hf.space/get_streams`, {
-                        headers: {
-                            'Authorization': `Bearer ${name}`,
-                        }
+                        headers: { 'Authorization': `Bearer ${token}` }
                     });
-                    console.log("checking==>", JSON.parse(response.data.ans));
-                    setInfoData(JSON.parse(response.data.ans));
+    
+                    console.log("Raw ans field BEFORE parsing:", response.data.ans);
+    
+                    let rawData = response.data.ans;
+    
+                    // Ensure response is a string
+                    if (typeof rawData !== "string") {
+                        console.error("Unexpected ans format:", rawData);
+                        return;
+                    }
+    
+                    // Fix malformed JSON structure
+                    let cleanedData = rawData
+                        .trim() // Remove extra spaces
+                        .replace(/\n/g, '') // Remove new lines
+                        .replace(/\r/g, '') // Remove carriage returns
+                        .replace(/,\s*\]/g, ']') // Remove trailing commas in arrays
+                        .replace(/,\s*}/g, '}') // Remove trailing commas in objects
+                        .replace(/"([^"]*)$/, (_, match) => `"${match}"`); // Fix missing end quote in strings
+    
+                    // Ensure proper array closure
+                    if (!cleanedData.endsWith(']')) {
+                        cleanedData += '"]'; // Safely close the JSON array
+                    }
+    
+                    // Fix duplicate quotes at the end
+                    cleanedData = cleanedData.replace(/""\]$/, '"]');
+    
+                    console.log("Cleaned JSON String:", cleanedData);
+    
+                    // Parse only after ensuring valid JSON
+                    let parsedData = JSON.parse(cleanedData);
+                    console.log("Parsed Data:", parsedData);
+    
+                    setInfoData(parsedData.flat()); // Ensure it's a 1D array
                 }
             } catch (error) {
                 console.error('Error fetching data:', error);
             } finally {
-                setIsLoading(false); // Set loading to false after fetching
+                setIsLoading(false);
             }
         };
-
+    
         fetchInfoData();
-    }, [count]);
+    }, []);
+    
+    
+    
+    
+    
+    
 
     useEffect(() => {
         if (degree) {
@@ -72,7 +109,7 @@ const FutureProfile = () => {
             };
             fetchInfoData();
         }
-    }, [degree,count]);
+    }, [degree]);
 
     useEffect(() => {
         const fetchInfoData = async () => {
@@ -94,7 +131,7 @@ const FutureProfile = () => {
         };
 
         fetchInfoData();
-    }, [count]);
+    }, []);
 
     useEffect(() => {
         if (infoData2) {
@@ -111,6 +148,7 @@ const FutureProfile = () => {
                         });
 
                         setCount(count + 1);
+                       
                         notifySuccess(infoData2);
                         console.log(response);
                     }
@@ -126,6 +164,7 @@ const FutureProfile = () => {
                                     'Authorization': `Bearer ${token}`,
                                 },
                             });
+                            setCount(count + 1);
                             console.log('Stream response:', streamResponse);
                             fetchInfoData();
                         } catch (streamError) {
