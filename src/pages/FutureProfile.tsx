@@ -32,27 +32,16 @@ const FutureProfile = () => {
                 if (!token) return;
     
                 const response = await axios.get(
-                    `https://swapnil-101-course-recommend.hf.space/get_streams`,
+                    `https://harsh1993-model.hf.space/get_streams`,
                     { headers: { 'Authorization': `Bearer ${token}` } }
                 );
     
                 console.log("Raw ans field BEFORE parsing:", response.data.ans);
     
-                let rawData = response.data.ans;
-    
-                // Ensure the data is a properly formatted JSON string
-                if (typeof rawData === "string") {
-                    try {
-                        let parsedData = JSON.parse(rawData);
-                        console.log("Parsed Data:", parsedData);
-    
-                        // Ensure it's a 1D array
-                        setInfoData(Array.isArray(parsedData) ? parsedData : []);
-                    } catch (jsonError) {
-                        console.error("Error parsing JSON:", jsonError);
-                    }
+                if (Array.isArray(response.data.ans)) {
+                    setInfoData(response.data.ans);
                 } else {
-                    console.error("Unexpected ans format:", rawData);
+                    console.error("Unexpected ans format:", response.data.ans);
                 }
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -70,6 +59,7 @@ const FutureProfile = () => {
     
     
     
+    
 
     useEffect(() => {
         if (degree) {
@@ -77,7 +67,7 @@ const FutureProfile = () => {
                 try {
                     const name = localStorage.getItem('token');
                     if (name) {
-                        const response = await axios.post(`https://swapnil-101-course-recommend.hf.space/get_three_streams`, {
+                        const response = await axios.post(`https://harsh1993-model.hf.space/get_three_streams`, {
                             "degree": degree?.masters_degree || degree?.bachelors_degree
                         }, {
                             headers: {

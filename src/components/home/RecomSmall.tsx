@@ -17,7 +17,7 @@ const RecomSmall: React.FC<RecomSmallProps> = ({ degree }: RecomSmallProps) => {
             try {
                 const token = localStorage.getItem('token');
                 if (degree) {
-                    const response = await axios.post('https://swapnil-101-course-recommend.hf.space/get_course', {
+                    const response = await axios.post('https://harsh1993-model.hf.space/get_course', {
                         "stream": degree
                     }, {
                         headers: {
@@ -40,7 +40,7 @@ const RecomSmall: React.FC<RecomSmallProps> = ({ degree }: RecomSmallProps) => {
             try {
                 const token = localStorage.getItem('token');
                 if (degree) {
-                    const response = await axios.post('https://swapnil-101-course-recommend.hf.space/get_certificate', {
+                    const response = await axios.post('https://harsh1993-model.hf.space/get_certificate', {
                         "stream": degree
                     }, {
                         headers: {
@@ -63,7 +63,7 @@ const RecomSmall: React.FC<RecomSmallProps> = ({ degree }: RecomSmallProps) => {
             try {
                 const token = localStorage.getItem('token');
                 if (degree) {
-                    const response = await axios.post('https://swapnil-101-course-recommend.hf.space/get_competition', {
+                    const response = await axios.post('https://harsh1993-model.hf.space/get_competition', {
                         "stream": degree
                     }, {
                         headers: {

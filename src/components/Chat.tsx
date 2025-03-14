@@ -12,7 +12,7 @@ const Chat: React.FC = () => {
         }
 
         setLoading(true);
-        axios.post('https://swapnil-101-course-recommend.hf.space/ai_mentor', { message })
+        axios.post('https://harsh1993-model.hf.space/ai_mentor', { message })
             .then(response => {
                 setChatHistory([...chatHistory, { message, source: 'user' }, { message: response.data.response, source: 'mentor' }]);
                 setMessage('');

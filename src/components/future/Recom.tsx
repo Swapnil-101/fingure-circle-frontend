@@ -25,7 +25,7 @@ const Recom: React.FC<Recom> = ({ degree }) => {
             try {
                 const name = localStorage.getItem('token')
                 if (degree?.stream_name) {
-                    const response = await axios.post(`https://swapnil-101-course-recommend.hf.space/get_course`, {
+                    const response = await axios.post(`https://harsh1993-model.hf.space/get_course`, {
                         "stream": degree?.stream_name
                     }, {
                         headers: {
@@ -50,7 +50,7 @@ const Recom: React.FC<Recom> = ({ degree }) => {
             try {
                 const name = localStorage.getItem('token')
                 if (degree?.stream_name) {
-                    const response = await axios.post(`https://swapnil-101-course-recommend.hf.space/get_certificate`, {
+                    const response = await axios.post(`https://harsh1993-model.hf.space/get_certificate`, {
                         "stream": degree?.stream_name
                     }, {
                         headers: {
@@ -76,7 +76,7 @@ const Recom: React.FC<Recom> = ({ degree }) => {
             try {
                 const name = localStorage.getItem('token')
                 if (degree?.stream_name) {
-                    const response = await axios.post(`https://swapnil-101-course-recommend.hf.space/get_competition`, {
+                    const response = await axios.post(`https://harsh1993-model.hf.space/get_competition`, {
                         "stream": degree?.stream_name
                     }, {
                         headers: {
