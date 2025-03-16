@@ -29,6 +29,23 @@ const MeetingCall = ({ roomId, password, isHost, peer }: MeetingCallProps) => {
   const [screenSharingPeerId, setScreenSharingPeerId] = useState<string | null>(null);
   const screenVideoRef = useRef<HTMLVideoElement>(null);
   const [isScreenSharePinned, setIsScreenSharePinned] = useState(true);
+  const [currentUrl, setCurrentUrl] = useState<string>('');
+
+  const [milestoneUrl, setMilestoneUrl] = useState("");
+  const [feedbackUrl, setFeedbackUrl] = useState("");
+
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const pathSegments = url.pathname.split("/").filter(Boolean); // Split & remove empty values
+    const lastSegment = pathSegments[pathSegments.length - 1]; // Get the last segment (e.g., "460")
+
+    if (lastSegment) {
+      setMilestoneUrl(`/milestoneform/${lastSegment}`);
+      setFeedbackUrl(`/feedbackform/${lastSegment}`);
+    }
+  }, []);
+
 
   // Initialize local media stream
   useEffect(() => {
@@ -351,6 +368,35 @@ const MeetingCall = ({ roomId, password, isHost, peer }: MeetingCallProps) => {
             <Users className="mr-2" size={20} />
             <span>{participants.size} / {MAX_PARTICIPANTS} participants</span>
           </div>
+
+          <div className='flex flex-col items-center gap-3'> 
+            <div className="p-4 bg-gray-100 rounded-lg shadow-md">
+              {/* <p className="text-lg font-semibold text-gray-800">Feedback</p> */}
+              <p className="text-sm text-gray-600">Milestone URL:</p>
+              <a
+                href={milestoneUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 font-medium underline hover:text-blue-700"
+              >
+                Click here to open
+              </a>
+            </div>
+
+            <div className="p-4 bg-gray-100 rounded-lg shadow-md">
+              {/* <p className="text-lg font-semibold text-gray-800">Feedback</p> */}
+              <p className="text-sm text-gray-600">Feedback</p>
+              <a
+                href={feedbackUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 font-medium underline hover:text-blue-700"
+              >
+                Click here to open
+              </a>
+            </div>
+          </div>
+
           {(isScreenSharing || screenSharingPeerId) && (
             <div className="text-gray-300">
               <span className="text-sm">
@@ -367,25 +413,22 @@ const MeetingCall = ({ roomId, password, isHost, peer }: MeetingCallProps) => {
           <div className="max-w-7xl mx-auto flex justify-center space-x-4">
             <button
               onClick={toggleAudio}
-              className={`p-3 rounded-full text-white hover:opacity-90 ${
-                isAudioEnabled ? 'bg-gray-600' : 'bg-red-600'
-              }`}
+              className={`p-3 rounded-full text-white hover:opacity-90 ${isAudioEnabled ? 'bg-gray-600' : 'bg-red-600'
+                }`}
             >
               {isAudioEnabled ? <Mic size={24} /> : <MicOff size={24} />}
             </button>
             <button
               onClick={toggleVideo}
-              className={`p-3 rounded-full text-white hover:opacity-90 ${
-                isVideoEnabled ? 'bg-gray-600' : 'bg-red-600'
-              }`}
+              className={`p-3 rounded-full text-white hover:opacity-90 ${isVideoEnabled ? 'bg-gray-600' : 'bg-red-600'
+                }`}
             >
               {isVideoEnabled ? <Video size={24} /> : <VideoOff size={24} />}
             </button>
             <button
               onClick={isScreenSharing ? stopScreenSharing : startScreenSharing}
-              className={`p-3 rounded-full text-white hover:opacity-90 ${
-                isScreenSharing ? 'bg-blue-600' : 'bg-gray-600'
-              }`}
+              className={`p-3 rounded-full text-white hover:opacity-90 ${isScreenSharing ? 'bg-blue-600' : 'bg-gray-600'
+                }`}
               disabled={!!screenSharingPeerId && screenSharingPeerId !== peer?.id}
             >
               <Monitor size={24} />

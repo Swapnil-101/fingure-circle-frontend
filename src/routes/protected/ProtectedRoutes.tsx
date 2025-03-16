@@ -90,11 +90,11 @@ const ProtectedRoutes = (user: any) => {
             component: <MyExperts />,
         },
         {
-            path: '/feedbackform',
+            path: `/feedbackform/:id`,
             component: <FeedBackForm />,
         },
         {
-            path: '/milestoneform',
+            path: `/milestoneform/:id`,
             component: <MilneStonForm />,
         },
         // {

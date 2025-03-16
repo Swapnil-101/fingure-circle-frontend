@@ -22,6 +22,8 @@ const Contact: React.FC = () => {
 
     const [feedback, setFeedback] = useState<any>([]);
     const [count, setCount] = useState<any>(0);
+    const [mentorId, setMentorId] = useState<number | null>(null);
+    const [userId, setUserId] = useState<number | null>(null);
     useRedirectIfNotLoggedIn()
 
     //@ts-ignore
@@ -32,14 +34,29 @@ const Contact: React.FC = () => {
 
 
     useEffect(() => {
+        // Retrieve mentorData and degree from localStorage
+        const storedMentorData = localStorage.getItem('mentorData');
+        const storedDegree = localStorage.getItem('degree');
+
+        if (storedMentorData && storedDegree) {
+            const mentorObj = JSON.parse(storedMentorData);
+            const degreeObj = JSON.parse(storedDegree);
+
+            setMentorId(mentorObj.mentor_id);
+            setUserId(degreeObj.user_id);
+        }
+    }, []);
+
+
+    useEffect(() => {
         const fetchUnFeedback = async () => {
             try {
                 const name = localStorage.getItem('token');
                 if (name) {
                     const response = await axios.get(`${baseURL}/feedback`, {
-                        params: { user_id: 1 },
+                        params: { user_id: userId, mentor_id: mentorId },
                     });
-                    console.log("checking==>", response.data);
+                    console.log("checking==>", userId, mentorId);
                     setFeedback(response.data);
                 }
             } catch (error) {
@@ -49,7 +66,7 @@ const Contact: React.FC = () => {
 
         fetchUnFeedback();
 
-    }, [])
+    }, [userId, mentorId]);
 
 
 
