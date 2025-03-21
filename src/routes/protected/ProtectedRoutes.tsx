@@ -1,6 +1,7 @@
 // ProtectedRoutes.jsx
 
 import MainMentor from '@/components/mentor/MainMentor';
+import AddedMilestone from '@/pages/AddedMilestone';
 import AdminVerfy from '@/pages/AdminVerfy';
 import BasicInfo from '@/pages/BasicInfo';
 import BecomeMentor from '@/pages/BecomeMentor';
@@ -96,6 +97,10 @@ const ProtectedRoutes = (user: any) => {
         {
             path: `/milestoneform/:id`,
             component: <MilneStonForm />,
+        },
+        {
+            path: `/milestoneformAdd/:id`,
+            component: <AddedMilestone />,
         },
         // {
         //     path: '/v2/meetingcall',

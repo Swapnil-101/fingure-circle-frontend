@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import Peer, { MediaConnection } from 'peerjs';
 import { Mic, MicOff, Video, VideoOff, Monitor, PhoneOff, Users, Pin, PinOff } from 'lucide-react';
+import axios from 'axios';
+import baseURL from '@/config/config';
+import { toast } from 'react-toastify';
 
 interface MeetingCallProps {
   roomId: string;
@@ -29,7 +32,7 @@ const MeetingCall = ({ roomId, password, isHost, peer }: MeetingCallProps) => {
   const [screenSharingPeerId, setScreenSharingPeerId] = useState<string | null>(null);
   const screenVideoRef = useRef<HTMLVideoElement>(null);
   const [isScreenSharePinned, setIsScreenSharePinned] = useState(true);
-  const [currentUrl, setCurrentUrl] = useState<string>('');
+  const [schudle, setSchudle] = useState<any>();
 
   const [milestoneUrl, setMilestoneUrl] = useState("");
   const [feedbackUrl, setFeedbackUrl] = useState("");
@@ -37,14 +40,97 @@ const MeetingCall = ({ roomId, password, isHost, peer }: MeetingCallProps) => {
 
   useEffect(() => {
     const url = new URL(window.location.href);
-    const pathSegments = url.pathname.split("/").filter(Boolean); // Split & remove empty values
+    const pathSegments = url.pathname.split("/").filter(Boolean);
+    const pathSegmentUrl = url.pathname + url.search; // Split & remove empty values
+    // Split & remove empty values
+    // console.log("pathSegments", pathSegmentUrl)
     const lastSegment = pathSegments[pathSegments.length - 1]; // Get the last segment (e.g., "460")
 
-    if (lastSegment) {
-      setMilestoneUrl(`/milestoneform/${lastSegment}`);
-      setFeedbackUrl(`/feedbackform/${lastSegment}`);
-    }
+    const fetchMilestoneData = async () => {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        toast.error('Token not found!');
+        return;
+      }
+      try {
+        const response = await axios.get(`${baseURL}/api/validMeeting`, {
+          params: { link: pathSegmentUrl }
+          // headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.data) {
+          setSchudle(response.data);
+        } else {
+          // if (lastSegment) {
+          //   setMilestoneUrl(`/milestoneform/${lastSegment}`);
+          // }
+          console.log('No milestones found.');
+        }
+      } catch (error) {
+        console.log('Failed to fetch milestone data.');
+        console.error('Error fetching milestones:', error);
+      } finally {
+        // setLoading(false);
+      }
+    };
+
+
+
+
+
+    fetchMilestoneData();
+
+
   }, []);
+
+  useEffect(() => {
+
+    const url = new URL(window.location.href);
+    const pathSegments = url.pathname.split("/").filter(Boolean);
+    // Split & remove empty values
+    // console.log("pathSegments", pathSegmentUrl)
+    const lastSegment = pathSegments[pathSegments.length - 1]; // Get the last segment (e.g., "460")
+
+    const fetchvalidationmiletone = async () => {
+      const token = localStorage.getItem('token');
+
+      console.log("schudle====>", schudle,);
+
+      if (!token) {
+        toast.error('Token not found!');
+        return;
+      }
+      try {
+        const response = await axios.get(`${baseURL}/checkmeeting/milestone`, {
+          params: { user_id: schudle?.user_id, mentor_id: schudle?.mentor_id },
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.data) {
+          // setSchudle(response.data);
+          console.log('milestones===>', response.data, response.data.user_id, response.data.mentor_id);
+          setMilestoneUrl(`/milestoneformAdd/${response.data.user_id}-${response.data.mentor_id}`);
+          setFeedbackUrl(`/feedbackform/${lastSegment}`);
+
+        } else {
+
+          console.log('No milestones found.');
+        }
+      } catch (error) {
+        if (lastSegment) {
+          setMilestoneUrl(`/milestoneform/${lastSegment}`);
+          setFeedbackUrl(`/feedbackform/${lastSegment}`);
+        }
+        console.log('Failed to fetch milestone data.');
+        console.error('Error fetching milestones:', error);
+      } finally {
+        // setLoading(false);
+      }
+    };
+
+    fetchvalidationmiletone();
+  }, [schudle]);
 
 
   // Initialize local media stream
@@ -369,7 +455,7 @@ const MeetingCall = ({ roomId, password, isHost, peer }: MeetingCallProps) => {
             <span>{participants.size} / {MAX_PARTICIPANTS} participants</span>
           </div>
 
-          <div className='flex flex-col items-center gap-3'> 
+          <div className='flex flex-col items-center gap-3'>
             <div className="p-4 bg-gray-100 rounded-lg shadow-md">
               {/* <p className="text-lg font-semibold text-gray-800">Feedback</p> */}
               <p className="text-sm text-gray-600">Milestone URL:</p>
