@@ -18,8 +18,8 @@ const MilestoneForm: React.FC = () => {
   ]);
   useRedirectIfNotLoggedIn()
 
-  const [userId, setuserId] = useState();
-  const [userIdsec, setuserIdsec] = useState();
+  // const [userId, setuserId] = useState();
+  // const [userIdsec, setuserIdsec] = useState();
   const { id } = useParams<{ id: string }>();
 
   //validate the user for milestoneform

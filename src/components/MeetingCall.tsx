@@ -40,11 +40,11 @@ const MeetingCall = ({ roomId, password, isHost, peer }: MeetingCallProps) => {
 
   useEffect(() => {
     const url = new URL(window.location.href);
-    const pathSegments = url.pathname.split("/").filter(Boolean);
+    // const pathSegments = url.pathname.split("/").filter(Boolean);
     const pathSegmentUrl = url.pathname + url.search; // Split & remove empty values
     // Split & remove empty values
     // console.log("pathSegments", pathSegmentUrl)
-    const lastSegment = pathSegments[pathSegments.length - 1]; // Get the last segment (e.g., "460")
+    // const lastSegment = pathSegments[pathSegments.length - 1]; // Get the last segment (e.g., "460")
 
     const fetchMilestoneData = async () => {
       const token = localStorage.getItem('token');

@@ -1,9 +1,10 @@
-import React from "react";
 
+
+//@ts-ignore
 const Milestone = ({ feedback }) => {
     return (
         <div className="">
-            {feedback.map((i, key) => (
+            {feedback.map((i: any, key: any) => (
                 <div key={key} className="bg-white shadow-lg rounded-lg p-6 max-w-md w-full">
                     <h2 className="text-xl font-semibold text-gray-800 text-center mb-4">
                         MileStone Summary

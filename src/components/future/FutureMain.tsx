@@ -12,7 +12,7 @@ interface FutureMainProps {
     degree: any
 }
 
-export const FutureMain: React.FC<FutureMainProps> = ({ infoData, setInfoData2, threeData, infoGetValue, infoData2, degree }: any) => {
+export const FutureMain: React.FC<FutureMainProps> = ({ infoData, setInfoData2, infoGetValue, infoData2, degree }: any) => {
     // console.log("futuremain", infoData)
 
 

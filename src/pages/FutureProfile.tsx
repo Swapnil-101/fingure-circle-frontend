@@ -17,7 +17,7 @@ const FutureProfile = () => {
     useRedirectIfNotLoggedIn();
 
     const notifySuccess = (data: any) => toast.success(`Successfully Selected: ${data}`);
-    const notifyError = (error: any) => toast.error(`Login failed: ${error}`);
+    // const notifyError = (error: any) => toast.error(`Login failed: ${error}`);
     console.log("maindegree==>", infoData);
 
     useEffect(() => {

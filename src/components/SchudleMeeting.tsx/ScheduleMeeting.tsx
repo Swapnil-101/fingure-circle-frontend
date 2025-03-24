@@ -17,8 +17,13 @@ interface Schedule {
   mentor_linkedin?: string;
 }
 
+interface ScheduleMeetingProps {
+  setCount: (value: any) => void;
+  count: any;
+}
+
 //@ts-ignore
-const ScheduleMeeting: React.FC = ({ setCount, count }) => {
+const ScheduleMeeting: React.FC<ScheduleMeetingProps> = ({ setCount, count }) => {
   const [formData, setFormData] = useState<Schedule>({
     id: 0,
     name: "",
@@ -40,10 +45,12 @@ const ScheduleMeeting: React.FC = ({ setCount, count }) => {
     linkedin: string;
   }[]>([]);
 
+  //@ts-ignore
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
   const [successMessage, setSuccessMessage] = useState<string>("");
+  //@ts-ignore
   const [userDetails, setUserDetails] = useState<any>({
     user_id: "",
     name: "",

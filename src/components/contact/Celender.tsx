@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import ScheduleMeeting from '../SchudleMeeting.tsx/ScheduleMeeting';
 
-const Calendar = ({ setCount, count }) => {
+const Calendar = ({ setCount }: any) => {
     // Load Calendly script
     const loadCalendlyScript = () => {
         const script = document.createElement('script');
@@ -44,7 +44,8 @@ const Calendar = ({ setCount, count }) => {
         <div>
 
 
-            
+
+
             <ScheduleMeeting setCount={setCount} count={setCount} />
         </div>
     );
