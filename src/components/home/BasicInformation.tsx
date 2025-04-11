@@ -9,7 +9,7 @@ const BasicInformation: React.FC = () => {
     const storedUserString = localStorage.getItem('user');
     // const user = storedUserString ? JSON.parse(storedUserString) : {};
 
-    console.log("user==>",storedUserString)
+    console.log("verison news 1.2",storedUserString)
 
 
 
