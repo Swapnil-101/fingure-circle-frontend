@@ -22,6 +22,7 @@ import axios from 'axios';
 import { toast } from "react-toastify";
 
 import baseURL from '@/config/config';
+import { Trash } from 'lucide-react';
 
 // Dummy data for degrees and expertise
 
@@ -38,6 +39,13 @@ interface FormData {
     milestones: string;
     profileImage: File | null;
     resume: File | null;
+    availability: AvailabilitySlot[];
+}
+
+interface AvailabilitySlot {
+    day: string;
+    startTime: string;
+    endTime: string;
 }
 
 
@@ -56,8 +64,15 @@ const BecomeFormV2 = () => {
     const [searchExpertise, setSearchExpertise] = useState('');
     const [searchDegree, setSearchDegree] = useState('');
 
+    // Maximum number of availability slots
+    const MAX_AVAILABILITY_SLOTS = 3;
 
-    console.log("apiData", apiData);
+    const weekdays = [
+        'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
+    ];
+
+
+    // console.log("apiData", apiData);
 
     const notifySuccess = () => toast.success("Your application has been submitted successfully!");
     const notifyError = (error: any) => toast.error(`Error: ${error}`);
@@ -75,7 +90,86 @@ const BecomeFormV2 = () => {
         milestones: "",
         profileImage: null,
         resume: null,
+        availability: []
     });
+
+    const isDayAlreadySelected = (day: string) => {
+        return formData.availability.some(slot => slot.day === day);
+    };
+
+    // Add availability slot
+    const addAvailabilitySlot = () => {
+        // Check if maximum slots have been reached
+        if (formData.availability.length < MAX_AVAILABILITY_SLOTS) {
+            setFormData(prev => ({
+                ...prev,
+                availability: [
+                    ...prev.availability,
+                    { day: '', startTime: '', endTime: '' }
+                ]
+            }));
+        } else {
+            toast.error(`You can only add up to ${MAX_AVAILABILITY_SLOTS} availability slots.`);
+        }
+    };
+
+    // Remove availability slot
+    const removeAvailabilitySlot = (index: number) => {
+        setFormData(prev => ({
+            ...prev,
+            availability: prev.availability.filter((_, i) => i !== index)
+        }));
+    };
+
+    // Update availability slot
+    const updateAvailabilitySlot = (
+        index: number,
+        field: keyof AvailabilitySlot,
+        value: string
+    ) => {
+        // Check for duplicate day selection
+        if (field === 'day') {
+            if (isDayAlreadySelected(value) && value !== '') {
+                toast.error('You cannot select the same day multiple times.');
+                return;
+            }
+        }
+
+        const newAvailability = [...formData.availability];
+        newAvailability[index] = {
+            ...newAvailability[index],
+            [field]: value
+        };
+        setFormData(prev => ({
+            ...prev,
+            availability: newAvailability
+        }));
+    };
+
+    // Validate form before submission
+    const validateAvailability = () => {
+        // Check for unique days
+        const days = formData.availability.map(slot => slot.day);
+        const uniqueDays = new Set(days);
+
+        if (days.length !== uniqueDays.size) {
+            toast.error('Each availability slot must have a unique day.');
+            return false;
+        }
+
+        // Check that all slots are fully filled
+        const incompleteSlot = formData.availability.find(
+            slot => !slot.day || !slot.startTime || !slot.endTime
+        );
+
+        if (incompleteSlot) {
+            toast.error('Please complete all availability slot details.');
+            return false;
+        }
+
+        return true;
+    };
+
 
     // Milestone options
     const milestoneOptions = ['3', '4', '5'];
@@ -162,10 +256,14 @@ const BecomeFormV2 = () => {
             throw new Error("Failed to upload file.");
         }
     };
-    // Handle form submission
-
+    // Modify handleSubmit to include validation
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Validate availability first
+        if (!validateAvailability()) {
+            return;
+        }
 
         const token = localStorage.getItem("token");
         if (!token) {
@@ -197,11 +295,9 @@ const BecomeFormV2 = () => {
 
             console.log("Form submitted successfully:", response.data);
             notifySuccess()
-            // alert("Your application has been submitted successfully!");
         } catch (error) {
             console.error("Error submitting form:", error);
             notifyError(error)
-            // alert("Failed to submit the form. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -451,6 +547,85 @@ const BecomeFormV2 = () => {
                             </div>
                         </div>
 
+                    </div>
+                </CardContent>
+
+                <CardContent className="space-y-6">
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">Availability Slots</h3>
+
+                        {formData.availability.map((slot, index) => (
+                            <div key={index} className="grid grid-cols-3 gap-4 items-center">
+                                <div className="space-y-2">
+                                    <Label>Day</Label>
+                                    <Select
+                                        value={slot.day}
+                                        onValueChange={(value) =>
+                                            updateAvailabilitySlot(index, 'day', value)
+                                        }
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select day" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {weekdays
+                                                .filter(day =>
+                                                    !isDayAlreadySelected(day) ||
+                                                    slot.day === day
+                                                )
+                                                .map((day) => (
+                                                    <SelectItem key={day} value={day}>
+                                                        {day}
+                                                    </SelectItem>
+                                                ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label>Start Time</Label>
+                                    <Input
+                                        type="time"
+                                        value={slot.startTime}
+                                        onChange={(e) =>
+                                            updateAvailabilitySlot(index, 'startTime', e.target.value)
+                                        }
+                                        required
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label>End Time</Label>
+                                    <div className='flex items-center justify-between gap-0'>
+                                        <Input
+                                            type="time"
+                                            value={slot.endTime}
+                                            onChange={(e) =>
+                                                updateAvailabilitySlot(index, 'endTime', e.target.value)
+                                            }
+                                            required
+                                        />
+                                        {formData.availability.length > 1 && (
+                                            <Trash
+                                                className="cursor-pointer"
+                                                onClick={() => removeAvailabilitySlot(index)}
+                                                size={24}
+                                                color="red" />
+                                        )}
+                                    </div>
+
+                                </div>
+                            </div>
+                        ))}
+
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={addAvailabilitySlot}
+                            className="w-full"
+                        >
+                            Add Another Availability Slot
+                        </Button>
                     </div>
                 </CardContent>
 

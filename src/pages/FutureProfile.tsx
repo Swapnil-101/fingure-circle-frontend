@@ -18,7 +18,7 @@ const FutureProfile = () => {
 
     const notifySuccess = (data: any) => toast.success(`Successfully Selected: ${data}`);
     // const notifyError = (error: any) => toast.error(`Login failed: ${error}`);
-    console.log("maindegree==>", infoData);
+    console.log("maindegree==>", degree);
 
     useEffect(() => {
         const degree = localStorage.getItem('degree') || "{}";
@@ -26,40 +26,123 @@ const FutureProfile = () => {
     }, []);
 
     useEffect(() => {
+
         const fetchInfoData = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
             try {
-                const token = localStorage.getItem('token');
-                if (!token) return;
-    
+
                 const response = await axios.get(
                     `https://harsh1993-model.hf.space/get_streams`,
                     { headers: { 'Authorization': `Bearer ${token}` } }
                 );
-    
+
                 console.log("Raw ans field BEFORE parsing:", response.data.ans);
-    
+
                 if (Array.isArray(response.data.ans)) {
                     setInfoData(response.data.ans);
                 } else {
                     console.error("Unexpected ans format:", response.data.ans);
                 }
-            } catch (error) {
-                console.error('Error fetching data:', error);
+
+                setCount(count + 1);
+                // console.log('Stream response:', streamResponse);
+                // setInfoData(streamResponse?.data); // or whatever field you want to show
+
+            } catch (streamError: any) {
+                console.error('Error calling /streams:', streamError);
+
+                const status = streamError?.response?.status;
+                if (status === 404 || status === 500) {
+                    try {
+                        // If /streams fails with 404 or 500, call /get_roles_by_stream
+                        const rolesResponse = await axios.post(`${baseURL}/get_roles_by_stream`, {
+                            role: degree?.stream_name,
+                        }, {
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                            },
+                        });
+
+                        setCount(count + 1);
+                        console.log("Fallback roles:", rolesResponse?.data.related_roles);
+                        setInfoData(rolesResponse?.data.related_roles);
+
+                    } catch (rolesError) {
+                        console.error('Error calling /get_roles_by_stream:', rolesError);
+                    }
+                }
             } finally {
                 setIsLoading(false);
             }
         };
-    
+
+        // const fetchInfoData = async () => {
+        //     try {
+        //         const token = localStorage.getItem('token');
+        //         if (!token) return;
+
+
+        //     } catch (error) {
+        //         console.error('Error fetching data:', error);
+        //     } finally {
+        //         setIsLoading(false);
+        //     }
+        // };
+
+        // const fetchInfoData = async () => {
+        //     try {
+        //         const token = localStorage.getItem('token');
+        //         if (token) {
+        //             const response = await axios.post(`${baseURL}/get_roles_by_stream`, {
+        //                 role: degree?.stream_name
+        //             }, {
+        //                 headers: {
+        //                     'Authorization': `Bearer ${token}`,
+        //                 },
+        //             });
+
+        //             setCount(count + 1);
+
+        //             // notifySuccess(infoData2);
+        //             console.log("role==?", response?.data.related_roles);
+        //             setInfoData(response?.data.related_roles)
+        //         }
+        //     } catch (error: any) {
+        //         console.error('Error fetching data:', error);
+        //         const token = localStorage.getItem('token');
+        //         if (error.response && error.response.status === 500) {
+        //             try {
+        //                 const streamResponse = await axios.post(`${baseURL}/streams`, {
+        //                     name: infoData2
+        //                 }, {
+        //                     headers: {
+        //                         'Authorization': `Bearer ${token}`,
+        //                     },
+        //                 });
+        //                 setCount(count + 1);
+        //                 console.log('Stream response:', streamResponse);
+        //                 fetchInfoData();
+        //             } catch (streamError) {
+        //                 console.error('Error fetching streams:', streamError);
+        //             }
+        //         }
+        //     } finally {
+        //         setIsLoading(false); // Set loading to false after fetching
+        //     }
+        // };
+
         fetchInfoData();
-    }, []);
-    
-    
-    
-    
-    
-    
-    
-    
+    }, [degree]);
+
+
+
+
+
+
+
+
 
     useEffect(() => {
         if (degree) {
@@ -124,7 +207,7 @@ const FutureProfile = () => {
                         });
 
                         setCount(count + 1);
-                       
+
                         notifySuccess(infoData2);
                         console.log(response);
                     }
@@ -162,7 +245,7 @@ const FutureProfile = () => {
 
     return (
         <div>
-            <FutureMain  infoGetValue={infoGetValue} degree={degree} infoData2={infoData2} setInfoData2={setInfoData2} infoData={infoData} threeData={threeData} />
+            <FutureMain infoGetValue={infoGetValue} degree={degree} infoData2={infoData2} setInfoData2={setInfoData2} infoData={infoData} threeData={threeData} />
             <ToastContainer />
         </div>
     );

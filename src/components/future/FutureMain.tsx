@@ -12,8 +12,8 @@ interface FutureMainProps {
     degree: any
 }
 
-export const FutureMain: React.FC<FutureMainProps> = ({ infoData, setInfoData2, infoGetValue, infoData2, degree }: any) => {
-    // console.log("futuremain", infoData)
+export const FutureMain: React.FC<FutureMainProps> = ({ infoData, setInfoData2, degree }: any) => {
+    console.log("futuremain", infoData)
 
 
     const [data, setData] = useState<any>();
@@ -143,8 +143,8 @@ export const FutureMain: React.FC<FutureMainProps> = ({ infoData, setInfoData2, 
                     </div>
                 </div>
             </div>
-
-            <Recom infoGetValue={infoGetValue} infoData2={infoData2} setInfoData2={setInfoData2} infoData={infoData} degree={degree} />
+                        
+            <Recom  degree={degree} />
 
 
 

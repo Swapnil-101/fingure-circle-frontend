@@ -1,3 +1,4 @@
+import baseURL from '@/config/config';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 
@@ -11,82 +12,53 @@ const RecomSmall: React.FC<RecomSmallProps> = ({ degree }: RecomSmallProps) => {
     const [certifcate, setCertifcate] = useState<any[]>([]);
     const [competition, setCompetition] = useState<any[]>([]);
 
-    // Fetch courses
     useEffect(() => {
-        const fetchCourses = async () => {
+        const fetchAllData = async () => {
+            const token = localStorage.getItem('token');
+            const stream = degree;
+
+            if (!stream) return;
+
+            const headers = {
+                Authorization: `Bearer ${token}`,
+            };
+
             try {
-                const token = localStorage.getItem('token');
-                if (degree) {
-                    const response = await axios.post('https://harsh1993-model.hf.space/get_course', {
-                        "stream": degree
-                    }, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                        },
-                    });
-                    setData(JSON.parse(response.data.ans));
+                // Try all three primary APIs in parallel
+                const [courseRes, certificateRes, competitionRes] = await Promise.all([
+                    axios.post(`https://harsh1993-model.hf.space/get_course`, { stream }, { headers }),
+                    axios.post(`https://harsh1993-model.hf.space/get_certificate`, { stream }, { headers }),
+                    axios.post(`https://harsh1993-model.hf.space/get_competition`, { stream }, { headers }),
+                ]);
+
+                setData(JSON.parse(courseRes.data.ans));
+                setCertifcate(JSON.parse(certificateRes.data.ans));
+                setCompetition(JSON.parse(competitionRes.data.ans));
+            } catch (primaryError) {
+                console.warn('Primary API failed, trying fallback API...', primaryError);
+
+                try {
+                    const fallbackRes = await axios.get(`${baseURL}/search-degree?degree=${stream}`, { headers });
+                    console.log("Fallback response", fallbackRes.data);
+
+                    setData(fallbackRes.data.courses || []);
+                    setCertifcate(fallbackRes.data.certifications || []);
+                    setCompetition(fallbackRes.data.competitions || []);
+                } catch (fallbackError) {
+                    console.error('Fallback API also failed:', fallbackError);
                 }
-            } catch (error) {
-                console.error('Error fetching data:', error);
             }
         };
 
-        fetchCourses();
+        fetchAllData();
     }, [degree]);
 
-    // Fetch certificates
-    useEffect(() => {
-        const fetchCertificates = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                if (degree) {
-                    const response = await axios.post('https://harsh1993-model.hf.space/get_certificate', {
-                        "stream": degree
-                    }, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                        },
-                    });
-                    setCertifcate(JSON.parse(response.data.ans));
-                }
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
-
-        fetchCertificates();
-    }, [degree]);
-
-    // Fetch competitions
-    useEffect(() => {
-        const fetchCompetitions = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                if (degree) {
-                    const response = await axios.post('https://harsh1993-model.hf.space/get_competition', {
-                        "stream": degree
-                    }, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                        },
-                    });
-                    setCompetition(JSON.parse(response.data.ans));
-                }
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
-
-        fetchCompetitions();
-    }, [degree]);
-
-    console.log("checkingallrunning==>", data);
 
     return (
         <section className="bg-white dark:bg-gray-900">
             <div className="container px-6 py-10 mx-auto">
                 <div className="grid grid-cols-1 gap-8 mt-8 xl:mt-12 xl:gap-12 md:grid-cols-2 xl:grid-cols-3">
-                    
+
                     {/* Courses */}
                     <div className="p-8 space-y-3 border-2 border-blue-400 dark:border-blue-300 rounded-xl">
                         <span className="inline-block text-blue-500 dark:text-blue-400">
