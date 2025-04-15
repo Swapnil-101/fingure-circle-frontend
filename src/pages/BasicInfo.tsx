@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import baseURL from '@/config/config';
 import { useNavigate } from 'react-router-dom';
-import useRedirectIfNotLoggedIn from '@/customHooks/useRedirectIfNotLoggedIn';
+// import useRedirectIfNotLoggedIn from '@/customHooks/useRedirectIfNotLoggedIn';
 
 interface ApiSuggestions {
     bachelors_degree: string[];
@@ -15,7 +15,7 @@ interface ApiSuggestions {
 const BasicInfo: React.FC = () => {
     const token = localStorage.getItem('token');
     const navigate = useNavigate();
-    useRedirectIfNotLoggedIn();
+    
 
     const [apiSuggestions, setApiSuggestions] = useState<ApiSuggestions>({
         bachelors_degree: [],
@@ -148,18 +148,16 @@ const BasicInfo: React.FC = () => {
 
     const handleSaveOrUpdate = async () => {
         try {
-            // const activities = userInfo.activities.join(', ');
-
             const dataToSend = {
                 ...userInfo,
                 activity: userInfo.activities,
                 certifications: userInfo.certification
             };
-
+    
             const method = infoData?.data_filled ? 'PUT' : 'POST';
             const url = `${baseURL}/user_details`;
-
-            await axios({
+    
+            const response = await axios({
                 method,
                 url,
                 data: dataToSend,
@@ -168,8 +166,24 @@ const BasicInfo: React.FC = () => {
                     'Content-Type': 'application/json'
                 }
             });
-
-            navigate('/');
+    
+            // Update both userInfo and degree in localStorage
+            const updatedUserInfo = {
+                ...userInfo,
+                data_filled: true
+            };
+            
+            localStorage.setItem('userInfo', JSON.stringify(updatedUserInfo));
+            
+            // Also update the degree object with data_filled: true
+            const degree = {
+                ...response.data,
+                data_filled: true
+            };
+            localStorage.setItem('degree', JSON.stringify(degree));
+            
+            // Navigate immediately - no need for setTimeout
+            navigate('/home');
         } catch (error) {
             console.error('Error:', error);
         }
