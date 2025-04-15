@@ -54,12 +54,20 @@ const FutureProfile = () => {
                 console.error('Error calling /streams:', streamError);
 
                 const status = streamError?.response?.status;
+
+                const payload = {};
+                if (degree?.stream_name && degree?.stream_name !== "null") {
+                    //@ts-ignore
+                    payload.role = degree.stream_name;
+                } else {
+                    //@ts-ignore
+                    payload.highestdegree = degree?.masters_degree || degree?.bachelors_degree;
+                }
+
                 if (status === 404 || status === 500) {
                     try {
                         // If /streams fails with 404 or 500, call /get_roles_by_stream
-                        const rolesResponse = await axios.post(`${baseURL}/get_roles_by_stream`, {
-                            role: degree?.stream_name,
-                        }, {
+                        const rolesResponse = await axios.post(`${baseURL}/get_roles_by_stream`, payload, {
                             headers: {
                                 'Authorization': `Bearer ${token}`,
                             },
