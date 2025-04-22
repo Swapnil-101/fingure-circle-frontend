@@ -27,13 +27,20 @@ const FeedBackForm: React.FC = () => {
     const storedMentorData = localStorage.getItem('mentorData');
     const storedDegree = localStorage.getItem('degree');
 
-    if (storedMentorData && storedDegree) {
-      const mentorObj = JSON.parse(storedMentorData);
-      const degreeObj = JSON.parse(storedDegree);
 
-      setMentorId(mentorObj.mentor_id);
-      setUserId(degreeObj.user_id);
+    if (storedMentorData || storedDegree) {
+      const mentorObj = storedMentorData ? JSON.parse(storedMentorData) : null;
+      const degreeObj = storedDegree ? JSON.parse(storedDegree) : null;
+    
+      if (mentorObj) {
+        setMentorId(mentorObj.mentor_id);
+      }
+    
+      if (degreeObj) {
+        setUserId(degreeObj.user_id);
+      }
     }
+
   }, []);
 
   useEffect(() => {

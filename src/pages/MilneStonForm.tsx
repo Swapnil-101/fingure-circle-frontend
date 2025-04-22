@@ -49,13 +49,19 @@ const MilestoneForm: React.FC = () => {
     // Retrieve mentorData and degree from localStorage
     const storedMentorData = localStorage.getItem('mentorData');
     const storedDegree = localStorage.getItem('degree');
+    
 
-    if (storedMentorData && storedDegree) {
-      const mentorObj = JSON.parse(storedMentorData);
-      const degreeObj = JSON.parse(storedDegree);
-
-      setMentorId(mentorObj.mentor_id);
-      setUserIdLocal(degreeObj.user_id);
+    if (storedMentorData || storedDegree) {
+      const mentorObj = storedMentorData ? JSON.parse(storedMentorData) : null;
+      const degreeObj = storedDegree ? JSON.parse(storedDegree) : null;
+    
+      if (mentorObj) {
+        setMentorId(mentorObj.mentor_id);
+      }
+    
+      if (degreeObj) {
+        setUserIdLocal(degreeObj.user_id);
+      }
     }
   }, []);
 
@@ -97,6 +103,8 @@ const MilestoneForm: React.FC = () => {
       return;
     }
 
+    console.log('Meeting Data:', meetingData,"checking twp==>",mentorId,"uselocal==>",userIdLocal)
+
     let formData: any = {};
     let checkId = null;
 
@@ -124,6 +132,8 @@ const MilestoneForm: React.FC = () => {
       check_meeting_id: id,
       check_id: checkId,
     };
+
+
 
     try {
       // Make API request
