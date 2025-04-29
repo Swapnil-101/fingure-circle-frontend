@@ -15,6 +15,7 @@ interface Schedule {
   mentor_email?: string;
   mentor_phone?: string;
   mentor_linkedin?: string;
+  timezone?: string;
 }
 
 interface ScheduleMeetingProps {
@@ -35,6 +36,7 @@ const ScheduleMeeting: React.FC<ScheduleMeetingProps> = ({ setCount, count }) =>
     mentor_email: "",
     mentor_phone: "",
     mentor_linkedin: "",
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   });
 
   const [mentorsList, setMentorsList] = useState<{
@@ -154,11 +156,13 @@ const ScheduleMeeting: React.FC<ScheduleMeetingProps> = ({ setCount, count }) =>
         ).toString();
         const encryptedPassword = CryptoJS.AES.encrypt(password, secretKey).toString();
 
+        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
         const meetingLink = `/v2/meetingcall/${randomId}?start=${encodeURIComponent(
           encryptedStartDate
         )}&end=${encodeURIComponent(encryptedEndDate)}&roomid=${encodeURIComponent(
           encryptedRoomId
-        )}&password=${encodeURIComponent(encryptedPassword)}`;
+        )}&password=${encodeURIComponent(encryptedPassword)}&timezone=${encodeURIComponent(timeZone)}`;
 
         const scheduleData = {
           name: parsedUserData2.first_name || "",
@@ -176,6 +180,7 @@ const ScheduleMeeting: React.FC<ScheduleMeetingProps> = ({ setCount, count }) =>
           mentor_email: formData.mentor_email,
           roomid: roomid,
           password: password,
+          timezone: formData.timezone,
         };
 
         const response = await axios.post<{ message: string; id: number }>(
@@ -266,6 +271,9 @@ const ScheduleMeeting: React.FC<ScheduleMeetingProps> = ({ setCount, count }) =>
               required
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
             />
+            <p className="text-sm text-gray-500">
+              Your Timezone: {formData.timezone}
+            </p>
           </label>
         </div>
 

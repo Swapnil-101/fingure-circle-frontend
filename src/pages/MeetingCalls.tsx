@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import MeetingCall from '@/components/MeetingCall';
 //@ts-ignore
 import CryptoJS from 'crypto-js';
+//@ts-ignore
+import { DateTime } from 'luxon';
 
 //@ts-ignore
 interface PeerConnection {
@@ -182,8 +184,12 @@ const MeetingCallHandler = () => {
                 const encryptedPassword = urlParams.get('password');
                 const encryptedStartDate = urlParams.get('start');
                 const encryptedEndDate = urlParams.get('end');
+                const encryptedTimezone = urlParams.get('timezone');
 
-                if (!encryptedRoomId || !encryptedPassword || !encryptedStartDate || !encryptedEndDate) {
+                
+                console.log('Encrypted Room encryptedTimezone:', encryptedRoomId,encryptedTimezone,encryptedPassword,encryptedStartDate,encryptedEndDate);
+
+                if (!encryptedRoomId || !encryptedPassword || !encryptedStartDate || !encryptedEndDate || !encryptedTimezone) {
                     throw new Error('Missing room parameters');
                 }
 
@@ -192,22 +198,42 @@ const MeetingCallHandler = () => {
                 const decryptedPassword = CryptoJS.AES.decrypt(encryptedPassword, secretKey).toString(CryptoJS.enc.Utf8);
                 const decryptedStartDate = CryptoJS.AES.decrypt(encryptedStartDate, secretKey).toString(CryptoJS.enc.Utf8);
                 const decryptedEndDate = CryptoJS.AES.decrypt(encryptedEndDate, secretKey).toString(CryptoJS.enc.Utf8);
+                const decryptedTimezone = encryptedTimezone;
 
-                if (!decryptedRoomId || !decryptedPassword || !decryptedStartDate || !decryptedEndDate) {
+                console.log('Decrypted Room:', decryptedRoomId, decryptedPassword, decryptedStartDate, decryptedEndDate, decryptedTimezone)
+
+                if (!decryptedRoomId || !decryptedPassword || !decryptedStartDate || !decryptedEndDate || !decryptedTimezone) {
                     throw new Error('Invalid room credentials or parameters');
                 }
 
-                // Parse the decrypted start date
-                const startDate = new Date(decryptedStartDate);
-                const currentDate = new Date();
+                const meetingStart = DateTime.fromISO(decryptedStartDate, { zone: decryptedTimezone });
 
-                // Check if the meeting date matches the system date
-                if (
-                    startDate.toDateString() !== currentDate.toDateString() ||
-                    startDate.getTime() - currentDate.getTime() > 10 * 60 * 1000
-                ) {
+                const localTimeInMeetingZone = DateTime.now().setZone(decryptedTimezone);
+                console.log('Meeting Start (in meeting timezone):', meetingStart.toISO());
+                console.log('Local time converted to meeting timezone:', localTimeInMeetingZone.toISO());
+
+                const isSameDay = meetingStart.toFormat('yyyy-MM-dd') === localTimeInMeetingZone.toFormat('yyyy-MM-dd');
+                const isWithin10Min = meetingStart.diff(localTimeInMeetingZone, 'minutes').toObject().minutes! <= 10;
+
+                if (!isSameDay || !isWithin10Min) {
                     throw new Error('Meeting is not yet available. Please check the start date and time.');
                 }
+
+                // Parse the decrypted start date
+                // const startDate = new Date(decryptedStartDate);
+                // const currentDate = new Date();
+
+                if (!isSameDay || !isWithin10Min) {
+                    throw new Error('Meeting is not yet available. Please check the start date and time.');
+                }
+
+                // Check if the meeting date matches the system date
+                // if (
+                //     startDate.toDateString() !== currentDate.toDateString() ||
+                //     startDate.getTime() - currentDate.getTime() > 10 * 60 * 1000
+                // ) {
+                //     throw new Error('Meeting is not yet available. Please check the start date and time.');
+                // }
 
                 // Check if room exists
                 const roomExists = await verifyRoom(decryptedRoomId);
