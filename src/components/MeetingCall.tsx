@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from 'react';
 import Peer, { MediaConnection } from 'peerjs';
 import { Mic, MicOff, Video, VideoOff, Monitor, PhoneOff, Users, Pin, PinOff } from 'lucide-react';
@@ -19,6 +20,8 @@ interface PeerData {
 
 //@ts-ignore
 const MeetingCall = ({ roomId, password, isHost, peer }: MeetingCallProps) => {
+ 
+
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const [peers, setPeers] = useState<Map<string, PeerData>>(new Map());
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
@@ -31,11 +34,11 @@ const MeetingCall = ({ roomId, password, isHost, peer }: MeetingCallProps) => {
   const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [screenSharingPeerId, setScreenSharingPeerId] = useState<string | null>(null);
   const screenVideoRef = useRef<HTMLVideoElement>(null);
-  const [isScreenSharePinned, setIsScreenSharePinned] = useState(true);
+  const [isScreenSharePinned, setIsScreenSharePinned] = useState(false);
   const [schudle, setSchudle] = useState<any>();
-
   const [milestoneUrl, setMilestoneUrl] = useState("");
   const [feedbackUrl, setFeedbackUrl] = useState("");
+  
 
 
   useEffect(() => {
@@ -74,11 +77,6 @@ const MeetingCall = ({ roomId, password, isHost, peer }: MeetingCallProps) => {
         // setLoading(false);
       }
     };
-
-
-
-
-
     fetchMilestoneData();
 
 
@@ -95,7 +93,7 @@ const MeetingCall = ({ roomId, password, isHost, peer }: MeetingCallProps) => {
     const fetchvalidationmiletone = async () => {
       const token = localStorage.getItem('token');
 
-      console.log("schudle====>", schudle,);
+      console.log("schudle====>", schudle);
 
       if (!token) {
         toast.error('Token not found!');
@@ -152,6 +150,7 @@ const MeetingCall = ({ roomId, password, isHost, peer }: MeetingCallProps) => {
         if (isHost && peer) {
           peer.on('call', (call) => {
             call.answer(stream);
+            console.log("hostttttt",peer);
             handleIncomingCall(call);
           });
         }
@@ -267,7 +266,7 @@ const MeetingCall = ({ roomId, password, isHost, peer }: MeetingCallProps) => {
         },
         audio: false
       });
-
+      
       // Set local screen sharing state
       setScreenSharingStream(stream);
       setIsScreenSharing(true);
@@ -285,7 +284,10 @@ const MeetingCall = ({ roomId, password, isHost, peer }: MeetingCallProps) => {
           const screenTrack = stream.getVideoTracks()[0];
           // Create a new peer connection for screen sharing
           //@ts-ignore
-          const screenSharingCall = peer?.call(call.peer, stream);
+          //metadata type should be added
+          const screenSharingCall = peer?.call(call.peer, stream,{
+            metadata: { type: "screenShare" }
+          });
 
           // Send metadata about screen sharing
           if (peer) {
@@ -342,6 +344,7 @@ const MeetingCall = ({ roomId, password, isHost, peer }: MeetingCallProps) => {
 
   // Handle incoming peer connections
   useEffect(() => {
+
     if (!peer) return;
 
     peer.on('connection', (conn) => {
@@ -352,7 +355,7 @@ const MeetingCall = ({ roomId, password, isHost, peer }: MeetingCallProps) => {
             setIsScreenSharePinned(true);
           } else if (data.action === 'stop') {
             setScreenSharingPeerId(null);
-            setIsScreenSharePinned(true);
+            setIsScreenSharePinned(false);
           }
         }
       });
@@ -361,13 +364,21 @@ const MeetingCall = ({ roomId, password, isHost, peer }: MeetingCallProps) => {
     peer.on('call', (call) => {
       if (localStream) {
         call.answer(localStream);
-
         call.on('stream', (remoteStream) => {
           // Check if this is a screen sharing stream
           if (call.metadata?.type === 'screenShare') {
-            if (screenVideoRef.current) {
-              screenVideoRef.current.srcObject = remoteStream;
-            }
+            
+            // if (screenVideoRef.current) {
+            //   screenVideoRef.current.srcObject = remoteStream;
+            // }
+
+            // Not Setting remoteStream Immediately
+            setTimeout(() => {
+              if (screenVideoRef.current) {
+                screenVideoRef.current.srcObject = remoteStream;
+              }
+            }, 100);
+            
             setScreenSharingPeerId(call.peer);
           } else {
             // Handle regular video stream
@@ -382,30 +393,46 @@ const MeetingCall = ({ roomId, password, isHost, peer }: MeetingCallProps) => {
           }
         });
       }
+      else{
+        console.log("localstream not working--------")
+      }
     });
-  }, [peer, localStream]);
+  }, [peer, localStream,screenVideoRef]);
+
+  //setting screen share 
+  useEffect(() => {
+    if (isScreenSharing && screenVideoRef.current && screenSharingStream) {
+      screenVideoRef.current.srcObject = screenSharingStream;
+      console.log("Screen sharing stream set successfully!");
+    }
+  }, [isScreenSharing, screenSharingStream]);
+ 
+  
+  
 
   const renderParticipantVideos = () => {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Screen sharing video */}
         {(isScreenSharing || screenSharingPeerId) && (
-          <div className={`relative bg-black rounded-lg overflow-hidden ${isScreenSharePinned ? 'col-span-full row-span-2' : ''
+          // <div className={`relative bg-black rounded-lg overflow-hidden ${isScreenSharePinned ? 'col-span-full row-span-2' : ''
+          //   }`}>
+              <div className={`relative bg-black rounded-lg overflow-hidden ${isScreenSharePinned ? 'col-span-full ' : ''
             }`}>
             <video
               ref={screenVideoRef}
               autoPlay
               playsInline
-              className="w-full h-full object-contain"
+              className={`w-full  ${isScreenSharePinned ? 'h-[82vh]':'h-[240px]'} object-contain`}
             />
-            <div className="absolute top-2 right-2 z-10">
+            {/* <div className="absolute top-2 right-2 z-10">
               <button
                 onClick={() => setIsScreenSharePinned(!isScreenSharePinned)}
                 className="p-2 bg-gray-800 rounded-full text-white hover:bg-gray-700"
               >
                 {isScreenSharePinned ? <PinOff size={20} /> : <Pin size={20} />}
               </button>
-            </div>
+            </div> */}
             <div className="absolute bottom-2 left-2 text-white bg-black bg-opacity-50 px-2 py-1 rounded">
               Screen Share {screenSharingPeerId === peer?.id ? '(You)' : ''}
             </div>
@@ -413,7 +440,7 @@ const MeetingCall = ({ roomId, password, isHost, peer }: MeetingCallProps) => {
         )}
 
         {/* Local video */}
-        <div className="relative bg-black rounded-lg overflow-hidden">
+        <div className={` bg-black rounded-lg overflow-hidden ${(isScreenSharing || screenSharingPeerId) && isScreenSharePinned ?'absolute top-[23rem] right-10 w-[220px] h-[140px]':'relative'}` }>
           <video
             ref={localVideoRef}
             autoPlay
@@ -436,7 +463,22 @@ const MeetingCall = ({ roomId, password, isHost, peer }: MeetingCallProps) => {
               ref={video => {
                 if (video) video.srcObject = stream;
               }}
+            //   onClick={isScreenSharing || screenSharingPeerId ? (event) => {
+            //     const videoElement = event.target as HTMLVideoElement;
+            //     if (videoElement.requestFullscreen) {
+            //       videoElement.requestFullscreen();
+            //     }
+            //   }
+            // :undefined}
             />
+            <div className="absolute top-2 right-2 z-10">
+              <button
+                onClick={() => setIsScreenSharePinned(!isScreenSharePinned)}
+                className="p-2 bg-gray-800 rounded-full text-white hover:bg-gray-700"
+              >
+                {isScreenSharePinned ? <PinOff size={20} /> : <Pin size={20} />}
+              </button>
+            </div>
             <div className="absolute bottom-2 left-2 text-white bg-black bg-opacity-50 px-2 py-1 rounded">
               Participant
             </div>
@@ -447,9 +489,43 @@ const MeetingCall = ({ roomId, password, isHost, peer }: MeetingCallProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 p-4">
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-4 flex items-center justify-between">
+    <div className="min-h-screen bg-gray-900 p-4 relative">
+      <div className="max-w-7xl mx-auto min-h-screen ">
+        { (isScreenSharing || screenSharingPeerId) && isScreenSharePinned?(
+          <>
+            <div className="flex items-center text-gray-300 absolute top-5 z-10">
+            <Users className="mr-2" size={20} />
+            <span>{participants.size} / {MAX_PARTICIPANTS} participants</span>
+          </div>
+          <div className='flex flex-col gap-3 absolute top-10 right-8 z-10'>
+          <div className="p-4 bg-gray-100 rounded-lg shadow-md">
+          
+          <p className="text-sm text-gray-600">Milestone URL:</p>
+          <a
+            href={milestoneUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 font-medium underline hover:text-blue-700"
+          >
+            Click here to open
+          </a>
+        </div>
+        <div className="p-4 bg-gray-100 rounded-lg shadow-md">
+          
+          <p className="text-sm text-gray-600">Milestone URL:</p>
+          <a
+            href={milestoneUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 font-medium underline hover:text-blue-700"
+          >
+            Click here to open
+          </a>
+        </div>
+            </div>
+        </>
+        ):(
+        <div className="mb-4 flex items-center justify-between ">
           <div className="flex items-center text-gray-300">
             <Users className="mr-2" size={20} />
             <span>{participants.size} / {MAX_PARTICIPANTS} participants</span>
@@ -457,7 +533,7 @@ const MeetingCall = ({ roomId, password, isHost, peer }: MeetingCallProps) => {
 
           <div className='flex flex-col items-center gap-3'>
             <div className="p-4 bg-gray-100 rounded-lg shadow-md">
-              {/* <p className="text-lg font-semibold text-gray-800">Feedback</p> */}
+          
               <p className="text-sm text-gray-600">Milestone URL:</p>
               <a
                 href={milestoneUrl}
@@ -470,7 +546,7 @@ const MeetingCall = ({ roomId, password, isHost, peer }: MeetingCallProps) => {
             </div>
 
             <div className="p-4 bg-gray-100 rounded-lg shadow-md">
-              {/* <p className="text-lg font-semibold text-gray-800">Feedback</p> */}
+          
               <p className="text-sm text-gray-600">Feedback</p>
               <a
                 href={feedbackUrl}
@@ -483,19 +559,19 @@ const MeetingCall = ({ roomId, password, isHost, peer }: MeetingCallProps) => {
             </div>
           </div>
 
-          {(isScreenSharing || screenSharingPeerId) && (
+          {/* {(isScreenSharing || screenSharingPeerId) && (
             <div className="text-gray-300">
               <span className="text-sm">
                 {screenSharingPeerId === peer?.id ? "You are" : "Participant is"} sharing screen
               </span>
             </div>
-          )}
+          )} */}
         </div>
-
+      )}
         {renderParticipantVideos()}
 
         {/* Controls */}
-        <div className="fixed bottom-0 left-0 right-0 bg-gray-800 p-4">
+        <div className="fixed bottom-0 left-0 right-0 bg-gray-800 p-4 z-10">
           <div className="max-w-7xl mx-auto flex justify-center space-x-4">
             <button
               onClick={toggleAudio}
